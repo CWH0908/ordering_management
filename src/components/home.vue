@@ -1,18 +1,17 @@
 <template>
   <div class="home">
-    <el-header>
-      <topHeader></topHeader>
-    </el-header>
-
+    <topHeader></topHeader>
+    
     <div class="aside">
       <tab></tab>
     </div>
 
     <div class="body">
-      这里放主体舞台组件
-      <router-view></router-view>
-      <router-view></router-view>
-      <router-view></router-view>
+      <router-view name="foodAdmin"></router-view>
+      <router-view name="orderAdmin"></router-view>
+      <router-view name="typeAdmin"></router-view>
+      <router-view name="shopInfoAdmin"></router-view>
+      <router-view name="dataStatistics"></router-view>
     </div>
   </div>
 </template>
@@ -31,11 +30,13 @@ export default {
 <style lang="less" scoped>
 .home {
   .aside {
-    width: 20vw;
     float: left;
+    height: 92vh;
+    background-color: #545c64;
   }
   .body {
     overflow: hidden;
+    height: 92vh;
     background-color: #67c23a;
   }
 }

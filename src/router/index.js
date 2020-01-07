@@ -15,25 +15,56 @@ export default new Router({
     // },
     {
       path: '/',
-      redirect:"/sign"
+      redirect: "/sign"
     },
     {
-      path:"/main",
-      redirect:"/main/home"
+      path: "/main",
+      redirect: "/main/home"
     },
     {
-      path:"/sign",
-      name:"sign",
-      components:{
+      path: "/sign",
+      name: "sign",
+      components: {
         sign
       }
     },
     {
-      path:"/main/home",
-      name:"home",
-      components:{
+      path: "/main/home",
+      name: "home",
+      components: {
         home
-      }
+      },
+      children: [{
+        path: "foodAdmin",
+        name: "foodAdmin",
+        components: {
+          "foodAdmin": resolve => require(["../components/body/foodAdmin.vue"], resolve)
+        }
+      }, {
+        path: "orderAdmin",
+        name: "orderAdmin",
+        components: {
+          "orderAdmin": resolve => require(["../components/body/orderAdmin.vue"], resolve)
+        }
+      }, {
+        path: "shopInfoAdmin",
+        name: "shopInfoAdmin",
+        components: {
+          "shopInfoAdmin": resolve => require(["../components/body/shopInfoAdmin.vue"], resolve)
+        }
+      }, {
+        path: "typeAdmin",
+        name: "typeAdmin",
+        components: {
+          "typeAdmin": resolve => require(["../components/body/typeAdmin.vue"], resolve)
+        }
+      }, {
+        path: "dataStatistics",
+        name: "dataStatistics",
+        components: {
+          "dataStatistics": resolve => require(["../components/body/dataStatistics.vue"], resolve)
+        }
+      }, ]
     }
   ]
 })
