@@ -19,7 +19,7 @@ export default new Router({
     },
     {
       path: "/main",
-      redirect: "/main/home"
+      redirect: "/main/home/foodAdmin"
     },
     {
       path: "/sign",

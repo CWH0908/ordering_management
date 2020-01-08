@@ -4,6 +4,8 @@
 
 ### 搭好大体页面布局
 
+### foodAdmin组件的编辑框布局完成，剩余（增删改逻辑功能，上传图片功能待完成）
+
 > A Vue.js project
 
 ## Build Setup

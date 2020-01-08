@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from "./store"
 
 Vue.config.productionTip = false
 
@@ -10,6 +11,27 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI);
+
+//引入 vant
+// import Vant from 'vant';
+import 'vant/lib/index.css';
+import {
+  Field,
+  Button,
+  DropdownMenu,
+  DropdownItem,
+  Collapse,
+  CollapseItem,
+  RadioGroup,
+  Radio
+} from 'vant';
+Vue.use(DropdownMenu).use(DropdownItem);
+Vue.use(Collapse).use(CollapseItem);
+Vue.use(RadioGroup);
+Vue.use(Radio);
+Vue.use(Field);
+Vue.use(Button)
+// Vue.use(Vant);
 
 
 /* eslint-disable no-new */
@@ -19,5 +41,6 @@ new Vue({
   components: {
     App
   },
+  store,
   template: '<App/>'
 })

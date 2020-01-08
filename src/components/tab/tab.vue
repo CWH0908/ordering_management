@@ -3,7 +3,7 @@
     <el-row class="tac">
       <el-col :span="12">
         <el-menu
-          default-active="2"
+          default-active="1"
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
@@ -42,6 +42,9 @@ export default {
   methods: {
     //改变舞台组件
     goBody(type) {
+      //每次切换功能导航，将body元素置为可滚动
+      document.getElementsByTagName("body")[0].style.overflow = "auto";
+
       this.$router.push({
         path: `/main/home/${type}`
       });

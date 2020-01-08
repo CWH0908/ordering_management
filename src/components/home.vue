@@ -1,7 +1,10 @@
 <template>
   <div class="home">
-    <topHeader></topHeader>
     
+    <div class="header">
+      <topHeader></topHeader>
+    </div>
+
     <div class="aside">
       <tab></tab>
     </div>
@@ -29,15 +32,23 @@ export default {
 
 <style lang="less" scoped>
 .home {
+  .header{
+    position: fixed;
+    width: 100%;
+    top: 0;
+  }
   .aside {
+    position: fixed;
+    top: 8vh;
     float: left;
     height: 92vh;
     background-color: #545c64;
   }
   .body {
     overflow: hidden;
-    height: 92vh;
-    background-color: #67c23a;
+    padding-left: 15vw;
+    padding-top: 8vh;
+    // background-color: #67c23a;
   }
 }
 </style>
