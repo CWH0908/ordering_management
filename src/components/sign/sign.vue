@@ -38,31 +38,36 @@
 </template>
 
 <script>
-import {Toast} from "vant";
-import {login} from "../../API/shopRequire"
-import {mapMutations} from "vuex";
+import { Toast } from "vant";
+import { login } from "../../API/shopRequire";
+import { mapMutations } from "vuex";
+import { getFoodList } from "../../API/getFoodList";
 
 export default {
   data() {
     return {
       inputAccount: "",
       inputPwd: "",
-      shopData:{}
+      shopData: {}
     };
   },
-  methods:{
+  methods: {
     ...mapMutations({
-      set_currentShop:"set_currentShop"
+      set_currentShop: "set_currentShop",
+      set_foodList: "set_foodList"
     }),
-    shopLogin(){
+    shopLogin() {
       this._shopLogin();
     },
-    async _shopLogin(){
+    async _shopLogin() {
       if (this.inputAccount != "" && this.inputPwd != "") {
         let temp = await login(this.inputAccount, this.inputPwd);
         if (temp) {
           this.shopData = temp;
-          this.set_currentShop(temp);//将从数据库中返回的数据保存在vuex中
+          this.set_currentShop(temp); //将从数据库中返回的数据保存在vuex中
+
+          //根据得到的店铺信息，请求其菜品信息
+          this._getFoodList(temp.shopID);
 
           const toast = Toast.loading({
             duration: 0, // 持续展示 toast
@@ -91,12 +96,17 @@ export default {
         Toast("请输入账号密码");
       }
     },
+    //请求菜品
+    async _getFoodList(shopID) {
+      let temp = await getFoodList(shopID);
+      this.set_foodList(temp);
+    },
 
     //商家注册
-    shopRegister(){
+    shopRegister() {
       this._shopRegister();
     },
-    async _shopRegister(){
+    async _shopRegister() {
       Toast("商家注册");
     }
   }

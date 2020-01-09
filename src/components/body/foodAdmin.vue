@@ -14,35 +14,70 @@
         </li>
       </ul>
       <div class="modifyFoodPart" v-if="isShowModifyPart" @click.self="changeIsShow">
-        <modifyFood :currentFoodItem="currentFoodItem" :foodTypeArr="foodTypeArr"></modifyFood>
+        <modifyFood
+          :currentFoodItem="currentFoodItem"
+          :foodTypeArr="foodTypeArr"
+          @saveButton="saveButton"
+          @cancelButton="changeIsShow"
+          @deleteButton="deleteButton"
+        ></modifyFood>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { getFoodList } from "../../API/getFoodList";
+import { mapMutations, mapGetters } from "vuex";
 import modifyFood from "../foodAdmin/modifyFood";
+import { Toast } from "vant";
+import { updateFoodList, deleteFoodItem } from "../../API/updateFoodList";
 export default {
-  created() {
-    this._getFoodList();
-  },
   data() {
     return {
-      foodList: [], //获取的菜品信息
       isShowModifyPart: false, //是否显示编辑框
       currentFoodItem: {} //当前点击的菜品信息传值到编辑框
     };
   },
   methods: {
-    async _getFoodList() {
-      this.foodList = await getFoodList(this.shopID);
-    },
+    ...mapMutations({
+      set_foodList: "set_foodList"
+    }),
     //打开菜品修改框
     openModify(item) {
       this.currentFoodItem = item;
       this.isShowModifyPart = true;
+    },
+    //保存菜品修改
+    saveButton(foodItem) {
+      //在vuex中更新
+      for (let i = 0; i < this.foodList.length; i++) {
+        if (this.foodList[i].foodID == foodItem.foodID) {
+          this.foodList[i] = JSON.parse(JSON.stringify(foodItem));
+        }
+      }
+      this.set_foodList(this.foodList);
+
+      //需在数据库中更新
+      updateFoodList(foodItem.foodID, foodItem);
+
+      Toast("修改成功");
+      this.changeIsShow();
+    },
+    //删除菜品
+    deleteButton(foodID) {
+      //在vuex中删除
+      for (let i = 0; i < this.foodList.length; i++) {
+        if (this.foodList[i].foodID == foodID) {
+          this.foodList.splice(i, 1);
+        }
+      }
+      this.set_foodList(this.foodList);
+
+      //在数据库中删除
+      deleteFoodItem(foodID);
+
+      Toast("删除成功");
+      this.changeIsShow();
     },
     //关闭编辑框
     changeIsShow() {
@@ -50,7 +85,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["currentShop"]),
+    ...mapGetters(["currentShop", "foodList"]),
     shopID() {
       return this.currentShop.shopID;
     },

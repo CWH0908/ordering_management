@@ -23,14 +23,16 @@ import {
   Collapse,
   CollapseItem,
   RadioGroup,
-  Radio
+  Radio,
+  Switch
 } from 'vant';
 Vue.use(DropdownMenu).use(DropdownItem);
 Vue.use(Collapse).use(CollapseItem);
 Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(Field);
-Vue.use(Button)
+Vue.use(Button);
+Vue.use(Switch)
 // Vue.use(Vant);
 
 

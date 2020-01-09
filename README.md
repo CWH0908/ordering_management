@@ -6,6 +6,8 @@
 
 ### foodAdmin组件的编辑框布局完成，剩余（增删改逻辑功能，上传图片功能待完成）
 
+### modifyFood.vue 组件的改删查菜品操作完成，已在vuex和数据库中同步更新，剩余（增加菜品的逻辑）
+
 > A Vue.js project
 
 ## Build Setup
