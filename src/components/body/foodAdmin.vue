@@ -9,7 +9,7 @@
         </li>
         <li v-for="(item,index) in foodList" :key="index" @click="openModify(item)">
           <div>
-            <img :src="item.pic_url" alt />
+            <img :src="getPicUrl(item.pic_url)" alt />
             <div class="textPart">
               <p>{{item.foodName}}</p>
               <p>{{item.foodInfo}}</p>
@@ -37,23 +37,32 @@
 import { mapMutations, mapGetters } from "vuex";
 import modifyFood from "../foodAdmin/modifyFood";
 import { Toast } from "vant";
+import { qiniuDomain } from "../../API/qiniuDomain"; //引入七牛外链
 import {
   updateFoodList,
   deleteFoodItem,
   insertFoodItem
 } from "../../API/updateFoodList";
+let that = this;
 export default {
   data() {
     return {
       isShowModifyPart: false, //是否显示编辑框
       currentFoodItem: {}, //当前点击的菜品信息传值到编辑框
-      isNewEdit: false //是否为新增菜品的编辑框
+      isNewEdit: false, //是否为新增菜品的编辑框
     };
+  },
+  created() {
+    this.qiniuDomain = qiniuDomain;
   },
   methods: {
     ...mapMutations({
       set_foodList: "set_foodList"
     }),
+    //返回拼接外链后的图片地址
+    getPicUrl(pic_url) {
+      return "http://"+qiniuDomain + "/" + pic_url;
+    },
     //打开菜品修改框
     openModify(item) {
       if (JSON.stringify(item) == "{}") {
@@ -179,6 +188,7 @@ export default {
         );
         img {
           width: 14vw;
+          height: 14vw;
         }
         .textPart {
           p {

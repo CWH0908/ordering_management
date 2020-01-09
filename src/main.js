@@ -24,7 +24,8 @@ import {
   CollapseItem,
   RadioGroup,
   Radio,
-  Switch
+  Switch,
+  Uploader 
 } from 'vant';
 Vue.use(DropdownMenu).use(DropdownItem);
 Vue.use(Collapse).use(CollapseItem);
@@ -33,6 +34,7 @@ Vue.use(Radio);
 Vue.use(Field);
 Vue.use(Button);
 Vue.use(Switch)
+Vue.use(Uploader)
 // Vue.use(Vant);
 
 

@@ -3,16 +3,15 @@
     <div class="container">
       <div class="uploadPart">
         <el-upload
-          action="https://jsonplaceholder.typicode.com/posts/"
-          list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
+          class="avatar-uploader"
+          :action="domain"
+          :http-request="upqiniu"
+          :show-file-list="false"
+          :before-upload="beforeUpload"
         >
-          <i class="el-icon-plus"></i>
+          <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="dialogImageUrl" alt />
-        </el-dialog>
       </div>
 
       <div class="inputPart">
@@ -45,6 +44,9 @@
 <script>
 import { Toast } from "vant";
 import { mapGetters } from "vuex";
+import axios from "axios";
+import { qiniuDomain } from "../../API/qiniuDomain"; //引入七牛外链
+
 export default {
   props: {
     currentFoodItem: {
@@ -62,15 +64,22 @@ export default {
   },
   data() {
     return {
-      dialogImageUrl: "",
-      dialogVisible: false,
       activeNames: ["0"],
+      currentPicUrl: "", //保存修改后的菜品图片
       currentFoodName: "", //保存修改后的菜品名称
       currentFoodInfo: "", //保存修改后的菜品信息
       currentNewMoney: "", //保存修改后的菜品价格
       currentfoodTypeIndex: 0, //保存修改后的菜品分类的Index
       //   currentfoodType:"",//保存修改后的菜品分类的值
-      currentChecked: false //保存修改后的是否推荐
+      currentChecked: false, //保存修改后的是否推荐
+
+      //七牛云数据变量
+      imageUrl: "",
+      token: {},
+      // 七牛云的上传地址，根据自己所在地区选择，我这里是华南区
+      domain: "https://upload-z2.qiniup.com",
+      // 这是七牛云空间的外链默认域名
+      qiniuaddr: qiniuDomain
     };
   },
   mounted() {
@@ -120,9 +129,13 @@ export default {
         this.currentNewMoney != "" &&
         this.currentfoodType != ""
       ) {
-        // this.currentFoodItem.pic_url=  暂未实现
+        //未上传图片,原图片地址不变
+        if (this.currentPicUrl != "") {
+          this.currentFoodItem.pic_url = this.currentPicUrl;
+        }
         this.currentFoodItem.foodName = this.currentFoodName;
         this.currentFoodItem.foodInfo = this.currentFoodInfo;
+
         this.currentFoodItem.newMoney = this.currentNewMoney;
         this.currentFoodItem.isRecommend = this.currentChecked ? "yes" : "no";
         this.currentFoodItem.foodType = this.currentfoodType;
@@ -144,10 +157,14 @@ export default {
         let newObj = {};
         let time = new Date();
         let waterNumber = time.getTime();
+        // 未选择图片，使用默认图片
+        if (this.currentPicUrl == "") {
+          newObj.pic_url = "defaultMall.jpeg";
+        } else {
+          newObj.pic_url = this.currentPicUrl;
+        }
         newObj.shopID = this.currentShop.shopID;
         newObj.foodID = `${this.currentShop.shopID}_${waterNumber}`;
-        newObj.pic_url =
-          "http://49.235.92.173:70/graduationDesign_images/defaultMallPic.jpeg";
         newObj.foodName = this.currentFoodName;
         newObj.foodSaleTimes = 0;
         newObj.foodInfo = this.currentFoodInfo;
@@ -178,6 +195,54 @@ export default {
           this.$emit("deleteButton", this.currentFoodItem.foodID);
         })
         .catch(() => {});
+    },
+
+    //七牛云上传操作**********************************************************************************
+    upqiniu(req) {
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" }
+      };
+      let filetype = "";
+      if (req.file.type === "image/png") {
+        filetype = "png";
+      } else {
+        filetype = "jpg";
+      }
+      //取得图片名
+      let uploadImgName = req.file.name.substring(
+        0,
+        req.file.name.indexOf(".")
+      );
+      // 重命名要上传的文件
+      const keyname =
+        "cwh-imglist_" + uploadImgName + "_" + new Date().getTime();
+      "." + filetype;
+
+      this.currentPicUrl = keyname;
+
+      // 从后端获取上传凭证token,此处在前端配置proxyTable代理进行跨域
+      axios.get("/upload/token").then(res => {
+        const formdata = new FormData();
+        formdata.append("file", req.file);
+        formdata.append("token", res.data);
+        formdata.append("key", keyname);
+        // 获取到凭证之后再将文件上传到七牛云空间
+        axios.post(this.domain, formdata, config).then(res => {
+          this.imageUrl = "http://" + this.qiniuaddr + "/" + res.data.key;
+        });
+      });
+    },
+    // 验证文件合法性
+    beforeUpload(file) {
+      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG、png 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
     }
   }
 };
@@ -244,5 +309,33 @@ export default {
       }
     }
   }
+}
+//七牛云样式
+.upload {
+  width: 600px;
+  margin: 0 auto;
+}
+.avatar-uploader .el-upload {
+  border: 5px dashed #ca1717 !important;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

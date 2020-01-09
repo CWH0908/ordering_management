@@ -10,6 +10,8 @@
 
 ### 完成增加菜品逻辑，modifyFood.vue组件剩余（上传图片到服务器）
 
+### 完成上传图片到七牛云服务器逻辑，modifyFood.vue组件剩余（修改菜品时回显之前的菜品图片）
+
 > A Vue.js project
 
 ## Build Setup
