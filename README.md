@@ -8,6 +8,8 @@
 
 ### modifyFood.vue 组件的改删查菜品操作完成，已在vuex和数据库中同步更新，剩余（增加菜品的逻辑）
 
+### 完成增加菜品逻辑，modifyFood.vue组件剩余（上传图片到服务器）
+
 > A Vue.js project
 
 ## Build Setup

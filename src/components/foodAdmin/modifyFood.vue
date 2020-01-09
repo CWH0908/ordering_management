@@ -33,9 +33,10 @@
       </div>
 
       <div class="operationPart">
-        <van-button type="info" @click="saveButton">保存</van-button>
+        <van-button v-if="!isNewEdit" type="info" @click="saveButton">保存</van-button>
+        <van-button v-if="isNewEdit" type="info" @click="insertButton">新增</van-button>
         <van-button type="warning" @click="cancelButton">取消</van-button>
-        <van-button type="danger" @click="deleteButton">删除</van-button>
+        <van-button v-if="!isNewEdit" type="danger" @click="deleteButton">删除</van-button>
       </div>
     </div>
   </div>
@@ -43,8 +44,7 @@
 
 <script>
 import { Toast } from "vant";
-let that = this;
-
+import { mapGetters } from "vuex";
 export default {
   props: {
     currentFoodItem: {
@@ -54,6 +54,10 @@ export default {
     foodTypeArr: {
       type: Array,
       default: () => []
+    },
+    isNewEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -70,13 +74,17 @@ export default {
     };
   },
   mounted() {
-    this.currentFoodName = this.currentFoodItem.foodName;
-    this.currentFoodInfo = this.currentFoodItem.foodInfo;
-    this.currentNewMoney = this.currentFoodItem.newMoney;
-    this.currentChecked = this.isChecked;
-    this.currentfoodTypeIndex = this.foodTypeIndex;
+    if (JSON.stringify(this.currentFoodItem) != "{}") {
+      //不是空对象，可进行赋值操作
+      this.currentFoodName = this.currentFoodItem.foodName;
+      this.currentFoodInfo = this.currentFoodItem.foodInfo;
+      this.currentNewMoney = this.currentFoodItem.newMoney;
+      this.currentChecked = this.isChecked;
+      this.currentfoodTypeIndex = this.foodTypeIndex;
+    }
   },
   computed: {
+    ...mapGetters(["currentShop"]),
     foodTypeIndex() {
       let foodType = this.currentFoodItem.foodType;
       //   this.currentfoodType = this.foodTypeArr.indexOf(foodType);
@@ -87,8 +95,8 @@ export default {
       let bool = isChecked == "yes" ? true : false;
       return bool;
     },
+    // 保存修改后的菜品分类的值
     currentfoodType() {
-      // 保存修改后的菜品分类的值
       for (let i = 0; i < this.foodTypeArr.length; i++) {
         if (this.currentfoodTypeIndex == i) {
           return this.foodTypeArr[i];
@@ -104,34 +112,56 @@ export default {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
-    //确认按钮
+    //保存按钮
     saveButton() {
-      //由于对象是引用地址，所以此处已经在vuex中更新
-      // this.currentFoodItem.pic_url=  暂未实现
-      this.currentFoodItem.foodName = this.currentFoodName;
-      this.currentFoodItem.foodInfo = this.currentFoodInfo;
-      this.currentFoodItem.newMoney = this.currentNewMoney;
-      this.currentFoodItem.isRecommend = this.currentChecked ? "yes" : "no";
-      this.currentFoodItem.foodType = this.currentfoodType;
+      if (
+        this.currentFoodName != "" &&
+        this.currentFoodInfo != "" &&
+        this.currentNewMoney != "" &&
+        this.currentfoodType != ""
+      ) {
+        // this.currentFoodItem.pic_url=  暂未实现
+        this.currentFoodItem.foodName = this.currentFoodName;
+        this.currentFoodItem.foodInfo = this.currentFoodInfo;
+        this.currentFoodItem.newMoney = this.currentNewMoney;
+        this.currentFoodItem.isRecommend = this.currentChecked ? "yes" : "no";
+        this.currentFoodItem.foodType = this.currentfoodType;
 
-      //传递给父组件在数据库中更新
-
-      this.$emit("saveButton", this.currentFoodItem);
+        //传递给父组件在vuex和数据库中更新
+        this.$emit("saveButton", this.currentFoodItem);
+      } else {
+        Toast("请完善录入信息");
+      }
     },
     //新增按钮
     insertButton() {
-      // let newObj = {};
-      //     newObj.shopID = this.currentFoodItem.shopID;
-      //     newObj.foodID =
-      //     newObj.pic_url=
-      //     newObj.foodName =
-      //     newObj.foodSaleTimes = 0;
-      //     newObj.foodInfo =
-      //     newObj.oldMoney = 0;
-      //     newObj.newMOney =
-      //     newObj.isRecommend=
-      //     newObj.saleTimes
-      //     newObj.foodType
+      if (
+        this.currentFoodName != "" &&
+        this.currentFoodInfo != "" &&
+        this.currentNewMoney != "" &&
+        this.currentfoodType != ""
+      ) {
+        let newObj = {};
+        let time = new Date();
+        let waterNumber = time.getTime();
+        newObj.shopID = this.currentShop.shopID;
+        newObj.foodID = `${this.currentShop.shopID}_${waterNumber}`;
+        newObj.pic_url =
+          "http://49.235.92.173:70/graduationDesign_images/defaultMallPic.jpeg";
+        newObj.foodName = this.currentFoodName;
+        newObj.foodSaleTimes = 0;
+        newObj.foodInfo = this.currentFoodInfo;
+        newObj.oldMoney = 0;
+        newObj.newMoney = this.currentNewMoney;
+        newObj.isRecommend = this.currentChecked ? "yes" : "no";
+        newObj.saleTimes = 0;
+        newObj.foodType = this.currentfoodType;
+
+        //传递给父组件在vuex和数据库中更新
+        this.$emit("insertButton", newObj);
+      } else {
+        Toast("请完善录入信息");
+      }
     },
     //取消按钮
     cancelButton() {
@@ -147,8 +177,7 @@ export default {
         .then(() => {
           this.$emit("deleteButton", this.currentFoodItem.foodID);
         })
-        .catch(() => {
-        });
+        .catch(() => {});
     }
   }
 };
@@ -177,6 +206,7 @@ export default {
     .inputPart {
       /deep/ .van-radio-group {
         padding-left: 1rem;
+        text-align: left;
       }
       /deep/ .van-cell--required {
         border: 1px solid rgba(0, 0, 0, 0.1);

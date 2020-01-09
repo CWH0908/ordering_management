@@ -16,7 +16,6 @@ export default {};
   font-family: "楷体";
   height: 8vh;
   line-height: 8vh;
-  background-color: #409EFF
-
+  background-color: #409EFF;
 }
 </style>

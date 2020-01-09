@@ -2,6 +2,11 @@
   <div class="foodAdmin">
     <div class="container">
       <ul>
+        <li class="addItem" @click="openModify({})">
+          <div class="addIcon">
+            <i class="el-icon-plus"></i>
+          </div>
+        </li>
         <li v-for="(item,index) in foodList" :key="index" @click="openModify(item)">
           <div>
             <img :src="item.pic_url" alt />
@@ -17,9 +22,11 @@
         <modifyFood
           :currentFoodItem="currentFoodItem"
           :foodTypeArr="foodTypeArr"
+          :isNewEdit="isNewEdit"
           @saveButton="saveButton"
           @cancelButton="changeIsShow"
           @deleteButton="deleteButton"
+          @insertButton="insertButton"
         ></modifyFood>
       </div>
     </div>
@@ -30,12 +37,17 @@
 import { mapMutations, mapGetters } from "vuex";
 import modifyFood from "../foodAdmin/modifyFood";
 import { Toast } from "vant";
-import { updateFoodList, deleteFoodItem } from "../../API/updateFoodList";
+import {
+  updateFoodList,
+  deleteFoodItem,
+  insertFoodItem
+} from "../../API/updateFoodList";
 export default {
   data() {
     return {
       isShowModifyPart: false, //是否显示编辑框
-      currentFoodItem: {} //当前点击的菜品信息传值到编辑框
+      currentFoodItem: {}, //当前点击的菜品信息传值到编辑框
+      isNewEdit: false //是否为新增菜品的编辑框
     };
   },
   methods: {
@@ -44,6 +56,9 @@ export default {
     }),
     //打开菜品修改框
     openModify(item) {
+      if (JSON.stringify(item) == "{}") {
+        this.isNewEdit = true;
+      }
       this.currentFoodItem = item;
       this.isShowModifyPart = true;
     },
@@ -61,6 +76,18 @@ export default {
       updateFoodList(foodItem.foodID, foodItem);
 
       Toast("修改成功");
+      this.changeIsShow();
+    },
+    //新增菜品
+    insertButton(foodItem) {
+      //在vuex中新增
+      this.foodList.push(foodItem);
+      this.set_foodList(this.foodList);
+
+      //在数据库中新增
+      insertFoodItem(foodItem);
+
+      Toast("添加成功");
       this.changeIsShow();
     },
     //删除菜品
@@ -81,6 +108,7 @@ export default {
     },
     //关闭编辑框
     changeIsShow() {
+      this.isNewEdit = false;
       this.isShowModifyPart = false;
     }
   },
@@ -121,9 +149,20 @@ export default {
     ul {
       padding: 2rem 3rem;
       text-align: left;
-
+      .addItem {
+        float: left;
+        border: 1px dotted rgba(0, 0, 0, 0.4);
+        background: white;
+        line-height: 40.6vh;
+        text-align: center;
+        .addIcon {
+          font-size: 3rem;
+          color: rgba(0, 0, 0, 0.4);
+        }
+      }
       li {
         display: inline-block;
+        height: 40.6vh;
         padding: 1rem;
         border: 1px solid gray;
         margin-right: 2rem;
