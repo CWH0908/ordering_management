@@ -33,3 +33,25 @@ export function insertFoodItem(foodItem) {
     return Promise.resolve(res.data);
   });
 }
+
+//修改菜品类型
+export function modifyFoodType(newTypeArr) {
+  return axios.get("http://localhost:8081/modifyFoodType", {
+    params: {
+      newTypeArr
+    }
+  }).then(res => {
+    return Promise.resolve(res.data);
+  });
+}
+
+//移除菜品分类及其菜品分类
+export function removeFoodType(foodType) {
+  return axios.get("http://localhost:8081/removeFoodType", {
+    params: {
+      foodType
+    }
+  }).then(res => {
+    return Promise.resolve(res.data);
+  });
+}
