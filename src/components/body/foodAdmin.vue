@@ -2,11 +2,13 @@
   <div class="foodAdmin">
     <div class="container">
       <ul>
+        <!-- 新增栏目 -->
         <li class="addItem" @click="openModify({})">
           <div class="addIcon">
             <i class="el-icon-plus"></i>
           </div>
         </li>
+        <!-- 现有菜品项 -->
         <li v-for="(item,index) in foodList" :key="index" @click="openModify(item)">
           <div>
             <img :src="getPicUrl(item.pic_url)" alt />
@@ -18,6 +20,7 @@
           </div>
         </li>
       </ul>
+      <!-- 编辑框 -->
       <div class="modifyFoodPart" v-if="isShowModifyPart" @click.self="changeIsShow">
         <modifyFood
           :currentFoodItem="currentFoodItem"

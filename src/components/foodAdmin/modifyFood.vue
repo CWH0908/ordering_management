@@ -1,18 +1,26 @@
 <template>
   <div class="modifyFood">
     <div class="container">
-      <div class="uploadPart">
+      <!-- <div class="uploadPart">
         <el-upload
           class="avatar-uploader"
           :action="domain"
-          :http-request="upqiniu"
+          :http-request="upQiniu"
           :show-file-list="false"
           :before-upload="beforeUpload"
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          <div v-else>
+            <i v-if="isNewEdit" class="el-icon-plus avatar-uploader-icon"></i>
+            <img v-else :src="firstPicUrl" class="avatar" />
+          </div>
         </el-upload>
-      </div>
+      </div>-->
+      <upload
+        :isNewEdit="isNewEdit"
+        :firstPicUrl="firstPicUrl"
+        @set_currentPicUrl="set_currentPicUrl"
+      ></upload>
 
       <div class="inputPart">
         <van-field v-model="currentFoodName" label="菜品名称" placeholder="请输入菜品名称" required />
@@ -46,6 +54,7 @@ import { Toast } from "vant";
 import { mapGetters } from "vuex";
 import axios from "axios";
 import { qiniuDomain } from "../../API/qiniuDomain"; //引入七牛外链
+import upload from "../base/upload";
 
 export default {
   props: {
@@ -65,6 +74,7 @@ export default {
   data() {
     return {
       activeNames: ["0"],
+      firstPicUrl: "", //修改菜品之前的旧图片
       currentPicUrl: "", //保存修改后的菜品图片
       currentFoodName: "", //保存修改后的菜品名称
       currentFoodInfo: "", //保存修改后的菜品信息
@@ -74,7 +84,7 @@ export default {
       currentChecked: false, //保存修改后的是否推荐
 
       //七牛云数据变量
-      imageUrl: "",
+      imageUrl: "", //预览的图片地址
       token: {},
       // 七牛云的上传地址，根据自己所在地区选择，我这里是华南区
       domain: "https://upload-z2.qiniup.com",
@@ -85,6 +95,8 @@ export default {
   mounted() {
     if (JSON.stringify(this.currentFoodItem) != "{}") {
       //不是空对象，可进行赋值操作
+      this.currentPicUrl = this.currentFoodItem.pic_url;
+      this.firstPicUrl = "http://" + qiniuDomain + "/" + this.currentPicUrl;
       this.currentFoodName = this.currentFoodItem.foodName;
       this.currentFoodInfo = this.currentFoodItem.foodInfo;
       this.currentNewMoney = this.currentFoodItem.newMoney;
@@ -198,7 +210,11 @@ export default {
     },
 
     //七牛云上传操作**********************************************************************************
-    upqiniu(req) {
+    //接收子组件抛出修改当前图片地址的函数
+    set_currentPicUrl(currentPicUrl) {
+      this.currentPicUrl = currentPicUrl;
+    },
+    upQiniu(req) {
       const config = {
         headers: { "Content-Type": "multipart/form-data" }
       };
@@ -215,8 +231,12 @@ export default {
       );
       // 重命名要上传的文件
       const keyname =
-        "cwh-imglist_" + uploadImgName + "_" + new Date().getTime();
-      "." + filetype;
+        "cwh-imglist_" +
+        uploadImgName +
+        "_" +
+        new Date().getTime() +
+        "." +
+        filetype;
 
       this.currentPicUrl = keyname;
 
@@ -244,6 +264,9 @@ export default {
       }
       return isJPG && isLt2M;
     }
+  },
+  components: {
+    upload
   }
 };
 </script>

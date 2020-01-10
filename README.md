@@ -12,6 +12,8 @@
 
 ### 完成上传图片到七牛云服务器逻辑，modifyFood.vue组件剩余（修改菜品时回显之前的菜品图片）
 
+### 2020-01-10  完成modifyFood.vue组件，完成菜品管理逻辑，并把上传图片封装成upload.vue组件
+
 > A Vue.js project
 
 ## Build Setup
