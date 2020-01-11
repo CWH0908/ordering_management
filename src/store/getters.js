@@ -4,3 +4,7 @@ export const currentShop = (state) => {
 export const foodList = (state) => {
   return state.foodList;
 }
+
+export const mallTypeArr = (state) => {
+  return state.mallTypeArr;
+}

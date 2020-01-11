@@ -36,7 +36,7 @@ export default {
       imageUrl: "", //预览的图片地址
       token: {},
       // 七牛云的上传地址，根据自己所在地区选择，我这里是华南区
-      domain: "https://upload-z2.qiniup.com",
+      domain: "http://upload-z2.qiniup.com",
       // 这是七牛云空间的外链默认域名
       qiniuaddr: qiniuDomain
     };
@@ -59,13 +59,8 @@ export default {
         req.file.name.indexOf(".")
       );
       // 重命名要上传的文件
-      const keyname =
-        "cwh-imglist_" +
-        uploadImgName +
-        "_" +
-        new Date().getTime() +
-        "." +
-        filetype;
+      const keyname ="cwh-imglist_" +uploadImgName +"_" + new Date().getTime() +"." +filetype;
+      // const keyname = `cwh-imglist_${uploadImgName}_${new Date().getTime()}.${filetype}`;
 
       //   this.currentPicUrl = keyname;
       //向父组件抛出最新的图片
