@@ -30,6 +30,9 @@
           <van-collapse-item title="菜品类型" name="1" :value="currentfoodType">
             <van-radio-group v-model="currentfoodTypeIndex">
               <van-radio v-for="(item,index) in foodTypeArr" :key="index" :name="index">{{item}}</van-radio>
+              <van-radio :name="foodTypeArr.length">
+                <el-input class="newInput" placeholder="请输入新分类" v-model="newType"></el-input>
+              </van-radio>
             </van-radio-group>
           </van-collapse-item>
         </van-collapse>
@@ -82,6 +85,7 @@ export default {
       currentfoodTypeIndex: 0, //保存修改后的菜品分类的Index
       //   currentfoodType:"",//保存修改后的菜品分类的值
       currentChecked: false, //保存修改后的是否推荐
+      newType: "新分类", //新的分类
 
       //七牛云数据变量
       imageUrl: "", //预览的图片地址
@@ -118,6 +122,9 @@ export default {
     },
     // 保存修改后的菜品分类的值
     currentfoodType() {
+      if (this.currentfoodTypeIndex >= this.foodTypeArr.length) {
+        return this.newType;
+      }
       for (let i = 0; i < this.foodTypeArr.length; i++) {
         if (this.currentfoodTypeIndex == i) {
           return this.foodTypeArr[i];
@@ -145,15 +152,20 @@ export default {
         if (this.currentPicUrl != "") {
           this.currentFoodItem.pic_url = this.currentPicUrl;
         }
-        this.currentFoodItem.foodName = this.currentFoodName;
-        this.currentFoodItem.foodInfo = this.currentFoodInfo;
+        //选择新分类但是值为空
+        if (this.currentfoodType == "") {
+          Toast("请完善分类信息");
+        } else {
+          this.currentFoodItem.foodName = this.currentFoodName;
+          this.currentFoodItem.foodInfo = this.currentFoodInfo;
 
-        this.currentFoodItem.newMoney = this.currentNewMoney;
-        this.currentFoodItem.isRecommend = this.currentChecked ? "yes" : "no";
-        this.currentFoodItem.foodType = this.currentfoodType;
+          this.currentFoodItem.newMoney = this.currentNewMoney;
+          this.currentFoodItem.isRecommend = this.currentChecked ? "yes" : "no";
+          this.currentFoodItem.foodType = this.currentfoodType;
 
-        //传递给父组件在vuex和数据库中更新
-        this.$emit("saveButton", this.currentFoodItem);
+          //传递给父组件在vuex和数据库中更新
+          this.$emit("saveButton", this.currentFoodItem);
+        }
       } else {
         Toast("请完善录入信息");
       }
@@ -175,19 +187,24 @@ export default {
         } else {
           newObj.pic_url = this.currentPicUrl;
         }
-        newObj.shopID = this.currentShop.shopID;
-        newObj.foodID = `${this.currentShop.shopID}_${waterNumber}`;
-        newObj.foodName = this.currentFoodName;
-        newObj.foodSaleTimes = 0;
-        newObj.foodInfo = this.currentFoodInfo;
-        newObj.oldMoney = 0;
-        newObj.newMoney = this.currentNewMoney;
-        newObj.isRecommend = this.currentChecked ? "yes" : "no";
-        newObj.saleTimes = 0;
-        newObj.foodType = this.currentfoodType;
+        //选择新分类但是值为空
+        if (this.currentfoodType == "") {
+          Toast("请完善分类信息");
+        } else {
+          newObj.shopID = this.currentShop.shopID;
+          newObj.foodID = `${this.currentShop.shopID}_${waterNumber}`;
+          newObj.foodName = this.currentFoodName;
+          newObj.foodSaleTimes = 0;
+          newObj.foodInfo = this.currentFoodInfo;
+          newObj.oldMoney = 0;
+          newObj.newMoney = this.currentNewMoney;
+          newObj.isRecommend = this.currentChecked ? "yes" : "no";
+          newObj.saleTimes = 0;
+          newObj.foodType = this.currentfoodType;
 
-        //传递给父组件在vuex和数据库中更新
-        this.$emit("insertButton", newObj);
+          //传递给父组件在vuex和数据库中更新
+          this.$emit("insertButton", newObj);
+        }
       } else {
         Toast("请完善录入信息");
       }
@@ -309,11 +326,24 @@ export default {
       }
       /deep/.van-radio {
         display: inline-block;
-        width: 50%;
+        width: 100%;
         text-align: left;
         /deep/ .van-radio__icon {
           display: inline-block;
+          vertical-align: middle;
         }
+      }
+      /deep/ .el-input {
+        font-size: 12px;
+        width: 75%;
+      }
+      .newType {
+        display: inline-block;
+        width: 40%;
+      }
+      /deep/.el-input__inner {
+        height: 25px;
+        line-height: 25px;
       }
       .isRecommend {
         text-align: left;

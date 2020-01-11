@@ -15,6 +15,9 @@
 ### 2020-01-10  完成modifyFood.vue组件，完成菜品管理逻辑，并把上传图片封装成upload.vue组件
 
 ### 2020-01-10 晚上 完成typeAdmin.vue分类管理板块的菜品类型删改查操作，剩余（在foodAdmin组件中加入可以添加新分类的操作）
+
+### 2020-01-11 上车完成菜品类型的新增，准备开始做店铺管理板块
+
 > A Vue.js project
 
 ## Build Setup
