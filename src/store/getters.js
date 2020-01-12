@@ -8,3 +8,7 @@ export const foodList = (state) => {
 export const mallTypeArr = (state) => {
   return state.mallTypeArr;
 }
+
+export const currentShopBaseData = (state) => {
+  return state.currentShopBaseData
+}

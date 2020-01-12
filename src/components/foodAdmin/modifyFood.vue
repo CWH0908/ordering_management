@@ -25,7 +25,18 @@
       <div class="inputPart">
         <van-field v-model="currentFoodName" label="菜品名称" placeholder="请输入菜品名称" required />
         <van-field v-model="currentFoodInfo" label="原料配方" placeholder="请输入菜品主料" required />
-        <van-field v-model="currentNewMoney" label="最新价格" placeholder="请输入菜品价格" required />
+        <!-- <van-field v-model="currentNewMoney" label="最新价格" placeholder="请输入菜品价格" required /> -->
+        <div class="newMoney">
+          <span>最新价格</span>
+          <el-input-number
+            v-model="currentNewMoney"
+            :precision="2"
+            :step="0.5"
+            :min="0"
+            controls-position="right"
+            size="mini"
+          ></el-input-number>
+        </div>
         <van-collapse v-model="activeNames">
           <van-collapse-item title="菜品类型" name="1" :value="currentfoodType">
             <van-radio-group v-model="currentfoodTypeIndex">
@@ -344,6 +355,38 @@ export default {
       /deep/.el-input__inner {
         height: 25px;
         line-height: 25px;
+      }
+      //费用，包含计数器
+      .newMoney {
+        text-align: left;
+        padding-left: 2.1rem;
+        span {
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;
+          width: 23%;
+          font-size: 0.8rem;
+          text-align: left;
+        }
+        // 计数器按钮
+        /deep/ .el-input-number--mini {
+          height: 32px;
+          line-height: 32px;
+          /deep/ .el-input-number__increase {
+            border-radius: 8px;
+            background: #409eff;
+            color: white;
+          }
+          /deep/ .el-input-number__decrease {
+            border-radius: 8px;
+            background: #f56c6c;
+            color: white;
+          }
+        }
+        /deep/.el-input__inner {
+          height: 25px;
+          line-height: 25px;
+        }
       }
       .isRecommend {
         text-align: left;

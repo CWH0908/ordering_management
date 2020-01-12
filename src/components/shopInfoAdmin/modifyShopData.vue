@@ -16,17 +16,49 @@
             </van-radio-group>
           </van-collapse-item>
         </van-collapse>
-        <!-- <van-field v-model="currentStratFee" label="起送价" placeholder="请输入起送价" required /> -->
-        起送价
-        <el-input-number v-model="currentStratFee" :precision="2" :step="0.5" ></el-input-number>
-        <van-field v-model="currentSendFee" label="配送费" placeholder="请输入配送费" required />
-        <van-field v-model="currentPhone" label="商家电话" placeholder="请输入联系电话" required />
-        <van-field v-model="currentOpenTime" label="营业时间" placeholder="请选择营业时间" required />
+        <!-- 起送价 -->
+        <div class="FeePart">
+          <span>起送价</span>
+          <el-input-number
+            v-model="currentStratFee"
+            :precision="2"
+            :step="0.5"
+            :min="0"
+            controls-position="right"
+            size="mini"
+          ></el-input-number>
+        </div>
+        <!-- 配送价 -->
+        <div class="FeePart">
+          <span>配送费</span>
+          <el-input-number
+            v-model="currentSendFee"
+            :precision="2"
+            :step="0.5"
+            :min="0"
+            controls-position="right"
+            size="mini"
+          ></el-input-number>
+        </div>
 
-        <!-- <div class="isRecommend">
-          是否推荐
-          <van-switch v-model="currentChecked" />
-        </div>-->
+        <van-field v-model="currentPhone" label="商家电话" placeholder="请输入联系电话" required />
+        <div class="isClose">
+          临时关门
+          <van-switch v-model="currentIsClose" />
+        </div>
+
+        <div class="Time">
+          <span>营业时间</span>
+          <el-time-picker
+            is-range
+            clearable
+            v-model="timeValue"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+          ></el-time-picker>
+        </div>
       </div>
 
       <div class="operationPart">
@@ -68,6 +100,9 @@ export default {
       currentPhone: "",
       currentOpenTime: "",
       currentCloseTime: "",
+      currentIsClose: false,
+
+      timeValue: [new Date(0, 0, 0, 8, 0), new Date(0, 0, 0, 20, 0)],
 
       //七牛云数据变量
       imageUrl: "", //预览的图片地址
@@ -90,6 +125,11 @@ export default {
     this.currentPhone = this.currentShopBaseData.phone;
     this.currentOpenTime = this.currentShopBaseData.openTime;
     this.currentCloseTime = this.currentShopBaseData.closeTime;
+    this.timeValue = this.formatTime(
+      this.currentOpenTime,
+      this.currentCloseTime
+    );
+    this.currentIsClose = this.currentShopBaseData.isClose;
   },
   computed: {
     ...mapGetters(["currentShop"]),
@@ -97,17 +137,21 @@ export default {
       let mallType = this.currentShopBaseData.mallType;
       return this.mallTypeArr.indexOf(mallType);
     },
+
     // isChecked() {
     //   let isChecked = this.currentFoodItem.isRecommend;
     //   let bool = isChecked == "yes" ? true : false;
     //   return bool;
     // },
-    currentMallType() {
-      for (let i = 0; i < this.mallTypeArr.length; i++) {
-        if (this.currentMallTypeIndex == i) {
-          return this.mallTypeArr[i];
+    currentMallType: {
+      get() {
+        for (let i = 0; i < this.mallTypeArr.length; i++) {
+          if (this.currentMallTypeIndex == i) {
+            return this.mallTypeArr[i];
+          }
         }
-      }
+      },
+      set() {}
     }
   },
   methods: {
@@ -127,7 +171,8 @@ export default {
         this.currentSendFee != "" &&
         this.currentPhone != "" &&
         this.currentOpenTime != "" &&
-        this.currentCloseTime != ""
+        this.currentCloseTime != "" &&
+        this.timeValue != null
       ) {
         //未上传图片,原图片地址不变
         if (this.currentPicUrl != "") {
@@ -141,9 +186,10 @@ export default {
         this.currentShopBaseData.phone = this.currentPhone;
         this.currentShopBaseData.openTime = this.currentOpenTime;
         this.currentShopBaseData.closeTime = this.currentCloseTime;
+        this.currentShopBaseData.isClose = this.currentIsClose;
 
         //传递给父组件在vuex和数据库中更新
-        // this.$emit("saveButton", this.currentShopBaseData);
+        this.$emit("saveButton", this.currentShopBaseData);
       } else {
         Toast("请完善录入信息");
       }
@@ -152,12 +198,45 @@ export default {
     cancelButton() {
       this.$emit("cancelButton");
     },
+    //格式化时间
+    formatTime(openTime, closeTime) {
+      //根据开门和关门时间，格式化出时间类型数据初始化时间选择器
+      let openHour = Number(openTime.split(":")[0]);
+      let openMinute = Number(openTime.split(":")[1]);
+      let closeHour = Number(closeTime.split(":")[0]);
+      let closeMinute = Number(closeTime.split(":")[1]);
+      return [
+        new Date(0, 0, 0, openHour, openMinute),
+        new Date(0, 0, 0, closeHour, closeMinute)
+      ];
+    },
+    //补0操作
+    addZero(value) {
+      if (value < 10) {
+        return "0" + value;
+      } else {
+        return value;
+      }
+    },
 
     //七牛云上传操作**********************************************************************************
     //接收子组件抛出修改当前图片地址的函数
     set_currentPicUrl(currentPicUrl) {
       console.log("接收到新的图片地址，", currentPicUrl);
       this.currentPicUrl = currentPicUrl;
+    }
+  },
+  watch: {
+    timeValue(newVal) {
+      let openHour = this.addZero(newVal[0].getHours());
+      let openMinute = this.addZero(newVal[0].getMinutes());
+      this.currentOpenTime = openHour + ":" + openMinute;
+
+      let closeHour = this.addZero(newVal[1].getHours());
+      let closeMinute = this.addZero(newVal[1].getMinutes());
+      this.currentCloseTime = closeHour + ":" + closeMinute;
+
+      // console.log("设置新的时间", this.currentOpenTime, this.currentCloseTime);
     }
   },
   components: {
@@ -199,13 +278,13 @@ export default {
   .container {
     overflow: auto;
     position: absolute;
-    top: -2rem;
+    top: -3rem;
     bottom: 0;
     left: 0;
     right: 0;
     margin: auto;
-    width: 24vw;
-    height: 87vh;
+    width: 30vw;
+    height: 90vh;
     background-color: white;
     border-radius: 8px;
     .uploadPart {
@@ -214,20 +293,10 @@ export default {
       margin: 1rem 0;
     }
     .inputPart {
+      // 单选按钮
       /deep/ .van-radio-group {
         padding-left: 1rem;
         text-align: left;
-      }
-      /deep/ .van-cell--required {
-        border: 1px solid rgba(0, 0, 0, 0.1);
-      }
-      /deep/ .van-cell {
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
-      /deep/ .van-cell__title {
-        text-align: left;
-        text-indent: 1.1rem;
       }
       /deep/.van-radio {
         display: inline-block;
@@ -238,19 +307,83 @@ export default {
           vertical-align: middle;
         }
       }
+      //下拉框
+      /deep/ .van-cell__right-icon {
+        margin: 0 9px;
+      }
+      // 输入框
+      /deep/ .van-cell--required {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      /deep/ .van-cell {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        padding-left: 14px;
+        padding-right: 0px;
+      }
+      /deep/ .van-cell__title {
+        text-align: left;
+        text-indent: 1.1rem;
+      }
       /deep/ .el-input {
         font-size: 12px;
         width: 75%;
       }
-      .newType {
-        display: inline-block;
-        width: 40%;
+      /deep/ .van-field__control {
+        padding-right: 2rem;
+        text-align: right;
+      }
+      // 计数器按钮
+      /deep/ .el-input-number--mini {
+        float: right;
+        height: 32px;
+        line-height: 32px;
+        /deep/ .el-input-number__increase {
+          border-radius: 8px;
+          background: #409eff;
+          color: white;
+        }
+        /deep/ .el-input-number__decrease {
+          border-radius: 8px;
+          background: #f56c6c;
+          color: white;
+        }
       }
       /deep/.el-input__inner {
         height: 25px;
         line-height: 25px;
       }
-      .isRecommend {
+      //费用，包含计数器
+      .FeePart {
+        text-align: left;
+        padding-left: 2.1rem;
+        span {
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;
+          width: 38%;
+          font-size: 0.8rem;
+          text-align: left;
+        }
+      }
+      // 时间，包含时间选择器
+      .Time {
+        text-align: left;
+        padding-left: 2.1rem;
+        span {
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;
+          width: 38%;
+          font-size: 0.8rem;
+          text-align: left;
+        }
+        /deep/ .el-input__inner {
+          height: 38px;
+          line-height: 38px;
+        }
+      }
+      .isClose {
         text-align: left;
         padding-left: 2rem;
         font-size: 0.9rem;
@@ -262,7 +395,7 @@ export default {
     }
     .operationPart {
       /deep/ .van-button {
-        margin-top: 1rem;
+        margin-top: 0.5rem;
         width: 85%;
       }
     }

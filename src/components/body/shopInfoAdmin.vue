@@ -11,6 +11,7 @@
             <el-rate style="display:inline-block;" v-model="currentShopBaseData.rateValue" disabled></el-rate>
           </p>临时关门
           <el-switch
+            disabled
             v-model="currentShopBaseData.isClose"
             active-color="#409EFF"
             inactive-color="#606266"
@@ -66,6 +67,7 @@
     <!-- 编辑框 -->
     <div v-if="isShowShopDataEdit" class="modifyPart" @click.self="closeEdit">
       <modifyShopData
+        @saveButton="saveButton"
         :currentShopBaseData="currentShopBaseData"
         @cancelButton="closeEdit"
         :mallTypeArr="mallTypeArr"
@@ -77,14 +79,15 @@
 <script>
 import upload from "../base/upload";
 import { mapMutations, mapGetters } from "vuex";
-import { getHomeShoplist } from "../../API/getHomeShopList";
+import { getHomeShoplist, updateShopData } from "../../API/getHomeShopList";
 import modifyShopData from "../shopInfoAdmin/modifyShopData";
 import { qiniuDomain } from "../../API/qiniuDomain";
+import { Toast } from "vant";
 
 export default {
   data() {
     return {
-      currentShopBaseData: {}, //存留当前店铺的基本信息
+      // currentShopBaseData: {}, //存留当前店铺的基本信息
       isClose: false, //当前是否关门
       isShowShopDataEdit: false //是否显示编辑框
     };
@@ -93,13 +96,18 @@ export default {
     this._getHomeShoplist();
   },
   methods: {
+    ...mapMutations({
+      set_currentShopBaseData: "set_currentShopBaseData"
+    }),
     //返回拼接外链后的图片地址
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
     },
     //获取店铺基本信息
     async _getHomeShoplist() {
-      this.currentShopBaseData = await getHomeShoplist(this.shopID);
+      // this.currentShopBaseData = await getHomeShoplist(this.shopID);
+      let temp = await getHomeShoplist(this.shopID);
+      this.set_currentShopBaseData(temp);
     },
     //点击修改资料，打开编辑框
     openEdit() {
@@ -108,10 +116,19 @@ export default {
     //关闭编辑框
     closeEdit() {
       this.isShowShopDataEdit = false;
+    },
+    //保存修改后的数据
+    saveButton(currentShopBaseData) {
+      //在vuex中保存
+      this.set_currentShopBaseData(currentShopBaseData);
+      //在数据库中保存
+      updateShopData(currentShopBaseData.shopID, currentShopBaseData);
+      Toast("保存成功");
+      this.closeEdit();
     }
   },
   computed: {
-    ...mapGetters(["currentShop", "mallTypeArr"]),
+    ...mapGetters(["currentShop", "mallTypeArr", "currentShopBaseData"]),
     bgStyle() {
       //用高斯模糊头像做背景图
       // return `background-image:url(${this.currentShopBaseData.pic_url});background-size:cover;filter: blur(20px);`;
