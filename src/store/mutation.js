@@ -12,6 +12,11 @@
     //设置当前店铺基本信息（资料）
     set_currentShopBaseData(state, currentShopBaseData) {
       state.currentShopBaseData = currentShopBaseData
+    },
+
+    //设置是否有新的订单
+    set_hasNewOrder(state, hasNewOrder) {
+      state.hasNewOrder = hasNewOrder
     }
   }
   export default mutations;

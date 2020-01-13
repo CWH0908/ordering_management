@@ -4,6 +4,7 @@ const state = {
     foodList:[],//当前店铺的菜品列表
     mallTypeArr:["Noodles","Popular","Fruit","Drinks","Barbecue","Hamburger"],//商家类型
     currentShopBaseData:{},//当前店铺基本信息
+    hasNewOrder:false,//是否有新的订单
 }
  
 export default state;

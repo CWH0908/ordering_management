@@ -21,14 +21,8 @@
 <script>
 import tab from "../components/tab/tab";
 import topHeader from "../components/topHeader/topHeader";
-// import {
-//   initWebSocket,
-//   websocketOnOpen,
-//   websocketOnError,
-//   websocketOnMessage,
-//   websocketsend,
-//   websocketClose
-// } from "../API/webSocketConnect";
+import { webSocketUrl } from "../API/webSocketUrl";
+import { mapMutations, mapGetters } from "vuex";
 
 export default {
   components: {
@@ -41,7 +35,7 @@ export default {
       requireData: "接收到服务端发送的数据:" //用于接收服务器返回的数据
     };
   },
-  mounted(){
+  mounted() {
     //home页加载，创建webSocket连接
     this.initWebSocket();
   },
@@ -49,7 +43,13 @@ export default {
     //销毁组件，跳转路由时关闭webSocket连接
     this.websock.close();
   },
+  computed: {
+    ...mapGetters(["currentShop", "hasNewOrder"])
+  },
   methods: {
+    ...mapMutations({
+      set_hasNewOrder: "set_hasNewOrder"
+    }),
     //连接到webSocket
     connectWebScket() {
       this.initWebSocket();
@@ -61,8 +61,7 @@ export default {
     initWebSocket() {
       //初始化weosocket
       // 以    ws://服务器地址/webSocket  路由的形式建立连接
-      const wsuri = "ws://127.0.0.1:8081/test";
-      this.websock = new WebSocket(wsuri);
+      this.websock = new WebSocket(webSocketUrl + this.currentShop.shopID);
       this.websock.onmessage = this.websocketonmessage;
       this.websock.onopen = this.websocketonopen;
       this.websock.onerror = this.websocketonerror;
@@ -71,9 +70,9 @@ export default {
     //连接建立之后执行send方法发送数据
     websocketonopen() {
       let actions = {
-        sendCustomData: "建立连接后，客户端自动发送数据****到服务端"
+        shopID: "00000"
       };
-      this.websocketsend(actions);
+      this.websocketsend(JSON.stringify(actions));
     },
     //连接建立失败重连
     websocketonerror() {
@@ -84,6 +83,11 @@ export default {
       const redata = e.data;
       this.requireData = this.requireData + "\n" + redata;
       console.log("接收到服务端发送的数据：", redata);
+      if (redata == "有新订单") {
+        this.set_hasNewOrder(true); //将是否有新订单的vuex数据置为true
+      }else{
+        this.set_hasNewOrder(false);
+      }
     },
     //客户端发送数据
     websocketsend(Data) {

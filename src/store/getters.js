@@ -12,3 +12,7 @@ export const mallTypeArr = (state) => {
 export const currentShopBaseData = (state) => {
   return state.currentShopBaseData
 }
+
+export const hasNewOrder = (state) => {
+  return state.hasNewOrder
+}
