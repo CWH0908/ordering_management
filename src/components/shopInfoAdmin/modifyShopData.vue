@@ -43,7 +43,7 @@
 
         <van-field v-model="currentPhone" label="商家电话" placeholder="请输入联系电话" required />
         <div class="isClose">
-          临时关门
+          <span>临时关门</span>
           <van-switch v-model="currentIsClose" />
         </div>
 
@@ -137,12 +137,6 @@ export default {
       let mallType = this.currentShopBaseData.mallType;
       return this.mallTypeArr.indexOf(mallType);
     },
-
-    // isChecked() {
-    //   let isChecked = this.currentFoodItem.isRecommend;
-    //   let bool = isChecked == "yes" ? true : false;
-    //   return bool;
-    // },
     currentMallType: {
       get() {
         for (let i = 0; i < this.mallTypeArr.length; i++) {
@@ -362,7 +356,7 @@ export default {
           height: 32px;
           line-height: 32px;
           width: 38%;
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           text-align: left;
         }
       }
@@ -375,7 +369,7 @@ export default {
           height: 32px;
           line-height: 32px;
           width: 38%;
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           text-align: left;
         }
         /deep/ .el-input__inner {
@@ -383,13 +377,23 @@ export default {
           line-height: 38px;
         }
       }
+      //临时关门，包含开关
       .isClose {
         text-align: left;
-        padding-left: 2rem;
+        padding-left: 2.1rem;
         font-size: 0.9rem;
+        span {
+          display: inline-block;
+          height: 32px;
+          line-height: 32px;
+          width: 75%;
+          font-size: 0.9rem;
+          text-align: left;
+        }
         /deep/ .van-switch {
           font-size: 20px;
           margin-left: 1rem;
+          vertical-align: middle;
         }
       }
     }
@@ -425,8 +429,8 @@ export default {
   text-align: center;
 }
 .avatar {
-  width: 178px;
-  height: 178px;
+  width: 150px;
+  height: 150px;
   display: block;
 }
 </style>
