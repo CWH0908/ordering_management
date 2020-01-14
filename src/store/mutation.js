@@ -22,6 +22,16 @@
     //设置是否有新的订单
     set_hasNewOrder(state, hasNewOrder) {
       state.hasNewOrder = hasNewOrder
+    },
+
+    //设置旧订单的长度
+    set_oldLength(state, oldLength) {
+      state.oldLength = oldLength
+    },
+
+    //设置未查看的订单数据
+    set_newOrderData(state, newOrderData) {
+      state.newOrderData = newOrderData
     }
   }
   export default mutations;

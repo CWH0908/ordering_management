@@ -15,6 +15,10 @@
       <router-view name="shopInfoAdmin"></router-view>
       <router-view name="dataStatistics"></router-view>
     </div>
+
+    <!-- <div class="newOrderTip" v-if="hasNewOrder&&currentRouter">
+      <el-button type="success" class="newOrderTip" @click="goToOrderAdmin">新订单</el-button>
+    </div>-->
   </div>
 </template>
 
@@ -23,6 +27,7 @@ import tab from "../components/tab/tab";
 import topHeader from "../components/topHeader/topHeader";
 import { webSocketUrl } from "../API/webSocketUrl";
 import { mapMutations, mapGetters } from "vuex";
+import { getShopOrder } from "../API/getOrder";
 
 export default {
   components: {
@@ -44,12 +49,42 @@ export default {
     this.websock.close();
   },
   computed: {
-    ...mapGetters(["currentShop", "hasNewOrder"])
+    ...mapGetters([
+      "currentShop",
+      "hasNewOrder",
+      "currentOrderData",
+      "oldLength"
+    ])
   },
   methods: {
+    //请求数据库获取最新订单数据
+    async _getShopOrder() {
+      let orderData = await getShopOrder(this.currentShop.shopID);
+      //更新vuex数据
+      this.set_currentOrderData(orderData.reverse());
+      //更新显示新的订单样式
+      this.setNewOrder(orderData.length);
+    },
+    //新订单样式，传入参数为新的总数据长度
+    setNewOrder(newLength) {
+      debugger;
+      this.set_newOrderData([]); //先将新订单数据置为空
+      if (newLength - this.oldLength > 0) {
+        //更新newOrder数据
+        let newArr = [];
+        for (let i = 0; i < this.currentOrderData.length; i++) {
+          if (i < newLength - this.oldLength) {
+            //小于新订单长度的都为新的订单
+            newArr.push(this.currentOrderData[i]);
+          }
+        }
+        this.set_newOrderData(newArr); //设置未查看的订单数据
+      }
+    },
     ...mapMutations({
       set_hasNewOrder: "set_hasNewOrder",
-      // set_currentOrderData: "currentOrderData"
+      set_currentOrderData: "set_currentOrderData",
+      set_newOrderData: "set_newOrderData"
     }),
     //连接到webSocket
     connectWebScket() {
@@ -98,6 +133,35 @@ export default {
     websocketclose(e) {
       console.log("关闭webSocket连接：", e);
     }
+    //跳转到订单页面
+    // goToOrderAdmin() {
+    //   this.$router.push({
+    //     name: "orderAdmin"
+    //   });
+    //   this.set_hasNewOrder(false); //跳转后将值置为false
+    // }
+  },
+  watch: {
+    //如果当前路由是订单列表，按钮则不显示
+    // $route(to, from) {
+    //   if(to.path=="main/home/orderAdmin"){
+    //     this
+    //   }
+    // }
+    hasNewOrder(newVal) {
+      if (newVal) {
+        console.log("有新订单，重新请求数据库");
+        this._getShopOrder();
+        this.$message({
+          message: "接到新的订单",
+          type: "success"
+        });
+        setTimeout(() => {
+          this.set_hasNewOrder(false); //请求后将值置为false
+          this.isShowNewOrderTip = true;
+        }, 3000);
+      }
+    }
   }
 };
 </script>
@@ -121,6 +185,11 @@ export default {
     padding-left: 15vw;
     padding-top: 8vh;
     // background-color: #67c23a;
+  }
+  .newOrderTip {
+    position: fixed;
+    bottom: 5rem;
+    right: 1rem;
   }
 }
 </style>

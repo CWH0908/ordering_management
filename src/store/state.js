@@ -6,6 +6,9 @@ const state = {
     currentShopBaseData:{},//当前店铺基本信息
     hasNewOrder:false,//是否有新的订单
     currentOrderData:[],//店铺的订单信息
+    // newLength:0,//最新订单数据的长度
+    oldLength:0,//旧订单数据的长度
+    newOrderData:[],//未查看的订单数据
 }
  
 export default state;

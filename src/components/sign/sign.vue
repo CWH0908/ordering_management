@@ -56,7 +56,8 @@ export default {
     ...mapMutations({
       set_currentShop: "set_currentShop",
       set_foodList: "set_foodList",
-      set_currentOrderData: "set_currentOrderData"
+      set_currentOrderData: "set_currentOrderData",
+      set_oldLength:"set_oldLength"
     }),
     shopLogin() {
       this._shopLogin();
@@ -106,6 +107,7 @@ export default {
       let orderData = await getShopOrder(shopID);
       // debugger
       this.set_currentOrderData(orderData.reverse());
+      this.set_oldLength(orderData.length);//一登录即设置最初的订单长度
     },
 
     //商家注册

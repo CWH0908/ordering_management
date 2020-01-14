@@ -20,3 +20,11 @@ export const hasNewOrder = (state) => {
 export const currentOrderData = (state) => {
   return state.currentOrderData
 }
+
+export const oldLength = (state) => {
+  return state.oldLength
+}
+
+export const newOrderData = (state) => {
+  return state.newOrderData
+}

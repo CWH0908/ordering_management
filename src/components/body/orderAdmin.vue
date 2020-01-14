@@ -1,14 +1,13 @@
 <template>
   <div class="orderAdmin">
-    订单管理板块
-    当前是否有新订单：{{hasNewOrder}}
-    <el-table :data="tableData" border style="width: 100%">
+    <!-- 当前是否有新订单：{{hasNewOrder}} -->
+    <el-table :data="tableData" border style="width: 100%;margin-top:2rem">
       <el-table-column align="center" prop="addressData.tel" label="联系方式" width="180"></el-table-column>
       <el-table-column align="center" prop="addressData.name" label="收货人" width="180"></el-table-column>
       <el-table-column align="center" prop="addressData.address" label="收货地址" width="180"></el-table-column>
       <el-table-column align="center" prop="buyTime" label="下单时间"></el-table-column>
       <el-table-column align="center" label="操作">
-        <template slot-scope="scope">
+        <template class="operation" slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
         </template>
       </el-table-column>
@@ -16,6 +15,33 @@
 
     <div class="orderDetailPart" v-if="isShowOrderDetails" @click.self="closeDetail">
       <orderDetail :orderDataItem="orderDataItem"></orderDetail>
+    </div>
+
+    <el-badge :value="this.newLength-this.oldLength" class="item" v-if="isShowNewOrderTip">
+      <el-button type="success" class="newOrderTip" @click="openNewOrderDiv">您有新的订单等待查看</el-button>
+    </el-badge>
+
+    <div class="newOrderDiv" v-if="isShowNewOrderDiv" @click.self="closeNewOrderDiv">
+      <div class="text">新订单数据列表</div>
+      <el-table :data="newOrderData" border style="width: 78%" class="newOrderTable">
+        <el-table-column align="center" prop="addressData.tel" label="联系方式" width="180"></el-table-column>
+        <el-table-column align="center" prop="addressData.name" label="收货人" width="180"></el-table-column>
+        <el-table-column align="center" prop="addressData.address" label="收货地址" width="180"></el-table-column>
+        <el-table-column align="center" prop="buyTime" label="下单时间" width="180"></el-table-column>
+        <el-table-column type="expand" label="菜品信息" width="183">
+          <template slot-scope="props">
+            <el-form label-position="right" inline class="demo-table-expand">
+              <el-form-item style="font-weight:bold;">
+                <div v-for="(item,index) in  props.row.foodList" :key="index">
+                  <span class="name">{{item.foodData.foodName }}</span>
+                  <span class="icon">x</span>
+                  <span class="count">{{item.foodCount }}</span>
+                </div>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
 
     <el-pagination
@@ -39,14 +65,24 @@ export default {
   data() {
     return {
       currentPage: 1, //当前显示的页数
-      pageSize: 3, //一页显示的数量
+      pageSize: 8, //一页显示的数量
       isShowOrderDetails: false, //是否显示订单详情板块
       orderDataItem: {}, //点击传给订单详情的订单项数据
-      oldLength: 0 //上一次的长度，将新长度减去旧长度，得到的即为新长度的 订单项
+      // oldLength: 0, //上一次的长度，将新长度减去旧长度，得到的即为新长度的 订单项
+      // newLength: 0, //新订单长度
+      // isShowNewOrderTip: false, //是否显示新订单提示框
+      isShowNewOrderDiv: false //是否显示新订单框
+      // newOrderData: [] //存放新订单的数组
     };
   },
   computed: {
-    ...mapGetters(["currentShop", "hasNewOrder", "currentOrderData"]),
+    ...mapGetters([
+      "currentShop",
+      "hasNewOrder",
+      "currentOrderData",
+      "oldLength",
+      "newOrderData"
+    ]),
     tableData() {
       let allOrder = JSON.parse(JSON.stringify(this.currentOrderData));
       let cuurrentPageOrder = allOrder.splice(
@@ -58,20 +94,37 @@ export default {
     },
     allOrderSum() {
       return this.currentOrderData.length; //数据的总条数
+    },
+    newLength: {
+      get() {
+        return this.currentOrderData.length;
+      },
+      set() {}
+    },
+    isShowNewOrderTip: {
+      get() {
+        return this.newLength - this.oldLength > 0 ? true : false;
+      },
+      set() {}
     }
   },
   mounted() {
-    this.oldLength = this.currentOrderData.length;
+    // this.oldLength = this.currentOrderData.length;
   },
   methods: {
     ...mapMutations({
       set_hasNewOrder: "set_hasNewOrder",
-      set_currentOrderData: "set_currentOrderData"
+      set_currentOrderData: "set_currentOrderData",
+      set_oldLength: "set_oldLength",
+      set_newOrderData: "set_newOrderData"
     }),
     //请求数据库获取最新订单数据
     async _getShopOrder() {
       let orderData = await getShopOrder(this.currentShop.shopID);
+      //更新vuex数据
       this.set_currentOrderData(orderData.reverse());
+      //更新显示新的订单样式
+      // this.setNewOrder(orderData.length);
     },
     //分页操作
     handleSizeChange(val) {
@@ -84,6 +137,39 @@ export default {
     handleEdit(index, row) {
       this.orderDataItem = row;
       this.openDetail();
+    },
+    //新订单样式，传入参数为新的总数据长度
+    // setNewOrder(newLength) {
+    //   this.newOrderData = []; //先将新订单数据置为空
+    //   this.newLength = newLength;
+    //   if (this.newLength - this.oldLength > 0) {
+    //     //有新订单，显示提示按钮
+    //     this.isShowNewOrderTip = true;
+    //     //更新newOrder数据
+    //     for (let i = 0; i < this.currentOrderData.length; i++) {
+    //       if (i < this.newLength - this.oldLength) {
+    //         //小于新订单长度的都为新的订单
+    //         this.newOrderData.push(this.currentOrderData[i]);
+    //       }
+    //     }
+    //   }
+    // },
+    //打开查看新订单数据
+    openNewOrderDiv() {
+      this.isShowNewOrderTip = false; //点击后关闭新订单提示
+      //同时将此时的oldLength设为newLength
+      // this.oldLength = this.newLength;
+      // this.set_oldLength(this.newLength);
+      this.newLength = 0;
+      this.isShowNewOrderDiv = true;
+      this.set_hasNewOrder(false); //查看后后将是否有新订单值置为false
+    },
+    //关闭新订单板块
+    closeNewOrderDiv() {
+      this.isShowNewOrderDiv = false;
+      // this.newOrderData = []; //将新订单数据置为空
+      this.set_oldLength(this.newLength);
+      this.set_newOrderData([]);
     },
     openDetail() {
       this.isShowOrderDetails = true;
@@ -99,6 +185,7 @@ export default {
         this._getShopOrder();
         setTimeout(() => {
           this.set_hasNewOrder(false); //请求后将值置为false
+          this.isShowNewOrderTip = true;
         }, 3000);
       }
     }
@@ -118,6 +205,42 @@ export default {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 999;
+  }
+  .item {
+    margin-top: 10px;
+    margin-right: 40px;
+  }
+  .newOrderTip {
+  }
+  .newOrderDiv {
+    .text {
+      padding: 2rem 0;
+    }
+    position: fixed;
+    top: 8vh;
+    width: 85vw;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    color: white;
+    .newOrderTable {
+      display: block;
+      margin: 0 auto;
+      /deep/ .el-form-item__label {
+        display: block;
+        text-align: left;
+      }
+      .name {
+      }
+      .icon {
+        font-weight: normal;
+        color: gray;
+      }
+      .count {
+        display: inline-block;
+        padding-left: 1rem;
+      }
+    }
   }
   .pageClass {
     position: fixed;
