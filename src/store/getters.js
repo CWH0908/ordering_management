@@ -16,3 +16,7 @@ export const currentShopBaseData = (state) => {
 export const hasNewOrder = (state) => {
   return state.hasNewOrder
 }
+
+export const currentOrderData = (state) => {
+  return state.currentOrderData
+}

@@ -42,6 +42,7 @@ import { Toast } from "vant";
 import { login } from "../../API/shopRequire";
 import { mapMutations } from "vuex";
 import { getFoodList } from "../../API/getFoodList";
+import { getShopOrder } from "../../API/getOrder";
 
 export default {
   data() {
@@ -54,7 +55,8 @@ export default {
   methods: {
     ...mapMutations({
       set_currentShop: "set_currentShop",
-      set_foodList: "set_foodList"
+      set_foodList: "set_foodList",
+      set_currentOrderData: "set_currentOrderData"
     }),
     shopLogin() {
       this._shopLogin();
@@ -100,6 +102,10 @@ export default {
     async _getFoodList(shopID) {
       let temp = await getFoodList(shopID);
       this.set_foodList(temp);
+      //确定了用户身份后，根据shopID去order_datas文档查找属于该店铺的订单
+      let orderData = await getShopOrder(shopID);
+      // debugger
+      this.set_currentOrderData(orderData.reverse());
     },
 
     //商家注册

@@ -48,7 +48,8 @@ export default {
   },
   methods: {
     ...mapMutations({
-      set_hasNewOrder: "set_hasNewOrder"
+      set_hasNewOrder: "set_hasNewOrder",
+      // set_currentOrderData: "currentOrderData"
     }),
     //连接到webSocket
     connectWebScket() {
@@ -85,7 +86,7 @@ export default {
       console.log("接收到服务端发送的数据：", redata);
       if (redata == "有新订单") {
         this.set_hasNewOrder(true); //将是否有新订单的vuex数据置为true
-      }else{
+      } else {
         this.set_hasNewOrder(false);
       }
     },

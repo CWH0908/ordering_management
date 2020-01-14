@@ -9,6 +9,11 @@
       state.foodList = foodList;
     },
 
+    //设置当前店铺的订单信息
+    set_currentOrderData(state, newOrderArr) {
+      state.currentOrderData = newOrderArr
+    },
+
     //设置当前店铺基本信息（资料）
     set_currentShopBaseData(state, currentShopBaseData) {
       state.currentShopBaseData = currentShopBaseData

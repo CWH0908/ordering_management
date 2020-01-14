@@ -5,6 +5,7 @@ const state = {
     mallTypeArr:["Noodles","Popular","Fruit","Drinks","Barbecue","Hamburger"],//商家类型
     currentShopBaseData:{},//当前店铺基本信息
     hasNewOrder:false,//是否有新的订单
+    currentOrderData:[],//店铺的订单信息
 }
  
 export default state;
