@@ -13,7 +13,8 @@
           <div>
             <img :src="getPicUrl(item.pic_url)" alt />
             <div class="textPart">
-              <p>{{item.foodName}}</p>
+              <p class="foodName">{{item.foodName}}</p>
+              <p>{{item.foodType}}</p>
               <p>{{item.foodInfo}}</p>
               <p>￥{{item.newMoney}}</p>
             </div>
@@ -52,7 +53,7 @@ export default {
     return {
       isShowModifyPart: false, //是否显示编辑框
       currentFoodItem: {}, //当前点击的菜品信息传值到编辑框
-      isNewEdit: false, //是否为新增菜品的编辑框
+      isNewEdit: false //是否为新增菜品的编辑框
     };
   },
   created() {
@@ -64,7 +65,7 @@ export default {
     }),
     //返回拼接外链后的图片地址
     getPicUrl(pic_url) {
-      return "http://"+qiniuDomain + "/" + pic_url;
+      return "http://" + qiniuDomain + "/" + pic_url;
     },
     //打开菜品修改框
     openModify(item) {
@@ -165,7 +166,7 @@ export default {
         float: left;
         border: 1px dotted rgba(0, 0, 0, 0.4);
         background: white;
-        line-height: 40.6vh;
+        line-height: 35.6vh;
         text-align: center;
         .addIcon {
           font-size: 3rem;
@@ -174,12 +175,13 @@ export default {
       }
       li {
         display: inline-block;
-        height: 40.6vh;
+        height: 35.6vh;
         padding: 1rem;
         border: 1px solid gray;
+        box-shadow: 10px 7px 20px;
         margin-right: 2rem;
         margin-bottom: 1rem;
-        width: 14vw;
+        width: 10vw;
         text-align: left;
         border-radius: 8px;
         background: -webkit-gradient(
@@ -190,11 +192,20 @@ export default {
           to(#b0c4de)
         );
         img {
-          width: 14vw;
-          height: 14vw;
+          display: block;
+          margin: 0 auto;
+          width: 10vw;
+          height: 10vw;
         }
         .textPart {
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+          padding-left: 0.5rem;
+          .foodName {
+            font-weight: 900;
+          }
           p {
+            line-height: 1.4;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;

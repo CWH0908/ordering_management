@@ -267,6 +267,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+//隐藏滚动条
+.container::-webkit-scrollbar {
+  display: none;
+}
 .modifyShopData {
   width: 100%;
   .container {

@@ -300,6 +300,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+//隐藏滚动条
+.container::-webkit-scrollbar {
+  display: none;
+}
 .modifyFood {
   width: 100%;
   .container {

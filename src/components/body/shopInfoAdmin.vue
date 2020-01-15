@@ -175,7 +175,7 @@ export default {
   .container {
     text-align: left;
     header {
-      padding: 2rem 3rem;
+      padding: 1rem 3rem;
       font-size: 1.2rem;
       line-height: 2;
       background: -webkit-gradient(
@@ -188,6 +188,7 @@ export default {
       img {
         width: 12vw;
         height: 12vw;
+        box-shadow: 8px 8px 8px;
         border-radius: 8px;
       }
       .rightPart {

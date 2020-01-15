@@ -1,7 +1,7 @@
 <template>
   <div class="orderAdmin">
     <!-- 当前是否有新订单：{{hasNewOrder}} -->
-    <el-table :data="tableData" border style="width: 100%;margin-top:2rem">
+    <el-table :data="tableData" border style="width: 100%;margin-top:2rem" stripe>
       <el-table-column align="center" prop="addressData.tel" label="联系方式" width="180"></el-table-column>
       <el-table-column align="center" prop="addressData.name" label="收货人" width="180"></el-table-column>
       <el-table-column align="center" prop="addressData.address" label="收货地址" width="180"></el-table-column>
@@ -23,7 +23,7 @@
 
     <div class="newOrderDiv" v-if="isShowNewOrderDiv" @click.self="closeNewOrderDiv">
       <div class="text">新订单数据列表</div>
-      <el-table :data="newOrderData" border style="width: 78%" class="newOrderTable">
+      <el-table :data="newOrderData" border style="width: 78%" class="newOrderTable" stripe>
         <el-table-column align="center" prop="addressData.tel" label="联系方式" width="180"></el-table-column>
         <el-table-column align="center" prop="addressData.name" label="收货人" width="180"></el-table-column>
         <el-table-column align="center" prop="addressData.address" label="收货地址" width="180"></el-table-column>
@@ -32,7 +32,7 @@
           <template slot-scope="props">
             <el-form label-position="right" inline class="demo-table-expand">
               <el-form-item style="font-weight:bold;">
-                <div v-for="(item,index) in  props.row.foodList" :key="index">
+                <div class="foodItem" v-for="(item,index) in  props.row.foodList" :key="index">
                   <span class="name">{{item.foodData.foodName }}</span>
                   <span class="icon">x</span>
                   <span class="count">{{item.foodCount }}</span>
@@ -207,12 +207,21 @@ export default {
     z-index: 999;
   }
   .item {
+    position: fixed;
+    bottom: 1.8rem;
+    right: 2rem;
     margin-top: 10px;
     margin-right: 40px;
   }
   .newOrderTip {
   }
   .newOrderDiv {
+    /deep/ .el-form-item__content {
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: row;
+      flex-wrap: wrap; //flex布局下可换行
+    }
     .text {
       padding: 2rem 0;
     }
@@ -223,22 +232,45 @@ export default {
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 999;
     color: white;
+    // 折叠菜品部分
+    /deep/ .demo-table-expand {
+      border-radius: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+    /deep/.el-table::before {
+      width: 0;
+      height: 0;
+    }
     .newOrderTable {
+      height: 60vh;
+      overflow: auto;
       display: block;
       margin: 0 auto;
+      /deep/ .el-form-item__content {
+        padding: 1rem;
+      }
       /deep/ .el-form-item__label {
         display: block;
         text-align: left;
       }
-      .name {
-      }
-      .icon {
-        font-weight: normal;
-        color: gray;
-      }
-      .count {
-        display: inline-block;
-        padding-left: 1rem;
+      .foodItem {
+        width: 14vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        .name {
+        }
+        .icon {
+          display: inline-block;
+          padding-left: 0.5rem;
+          font-size: 0.8rem;
+          font-weight: normal;
+          color: gray;
+        }
+        .count {
+          display: inline-block;
+          padding-left: 1rem;
+        }
       }
     }
   }
@@ -247,6 +279,11 @@ export default {
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
+    /deep/ .el-pager {
+      li.active {
+        font-size: 1.5rem !important;
+      }
+    }
   }
 }
 </style>

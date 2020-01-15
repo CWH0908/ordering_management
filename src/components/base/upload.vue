@@ -59,7 +59,13 @@ export default {
         req.file.name.indexOf(".")
       );
       // 重命名要上传的文件
-      const keyname ="cwh-imglist_" +uploadImgName +"_" + new Date().getTime() +"." +filetype;
+      const keyname =
+        "cwh-imglist_" +
+        uploadImgName +
+        "_" +
+        new Date().getTime() +
+        "." +
+        filetype;
       // const keyname = `cwh-imglist_${uploadImgName}_${new Date().getTime()}.${filetype}`;
 
       //   this.currentPicUrl = keyname;
@@ -117,6 +123,7 @@ export default {
   height: 178px;
   line-height: 178px;
   text-align: center;
+  border: 1px dotted rgba(0, 0, 0, 0.4);
 }
 .avatar {
   width: 178px;
