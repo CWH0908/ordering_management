@@ -67,7 +67,6 @@ export default {
     },
     //新订单样式，传入参数为新的总数据长度
     setNewOrder(newLength) {
-      debugger;
       this.set_newOrderData([]); //先将新订单数据置为空
       if (newLength - this.oldLength > 0) {
         //更新newOrder数据
@@ -169,6 +168,7 @@ export default {
 <style lang="less" scoped>
 .home {
   .header {
+    z-index: 999;
     position: fixed;
     width: 100%;
     top: 0;

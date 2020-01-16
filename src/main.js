@@ -25,7 +25,7 @@ import {
   RadioGroup,
   Radio,
   Switch,
-  Uploader 
+  Uploader
 } from 'vant';
 Vue.use(DropdownMenu).use(DropdownItem);
 Vue.use(Collapse).use(CollapseItem);
@@ -37,6 +37,22 @@ Vue.use(Switch)
 Vue.use(Uploader)
 // Vue.use(Vant);
 
+//按需引入 echarts
+import ECharts from 'vue-echarts'
+//折线图
+import 'echarts/lib/chart/line'
+// 柱状图
+import 'echarts/lib/chart/bar';
+Vue.component('chart', ECharts)
+// 引入饼状图组件
+require('echarts/lib/chart/pie')
+// 引入提示框和title组件
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/title')
+
+// 引入fullpage
+import VueFullpage from 'vue-fullpage.js'
+Vue.use(VueFullpage)
 
 /* eslint-disable no-new */
 new Vue({
