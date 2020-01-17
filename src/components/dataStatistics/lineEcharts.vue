@@ -6,18 +6,32 @@
 
 <script>
 export default {
+  props: {
+    getRecentlyDay: {
+      type: Array,
+      default: () => []
+    },
+    saleMoneyData: {
+      type: Array,
+      default: () => []
+    }
+  },
   computed: {
     // 折线图
     lineOrgOptions() {
       return {
         title: {
-          text: "近30天订单数据", //主标题
+          text: "近15天销量数据", //主标题
           subtext: "根据用户的下单情况统计", //副标题
           x: "center" //x轴方向对齐方式
         },
+        tooltip: {
+          trigger: "item",
+          formatter: "销售额 <br/>{b} : {c} 元"
+        },
         xAxis: {
           type: "category",
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+          data: this.getRecentlyDay
         },
         yAxis: {
           type: "value"
@@ -25,7 +39,7 @@ export default {
         smooth: true, //折线平滑
         series: [
           {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            data: this.saleMoneyData,
             type: "line",
             smooth: true
           }

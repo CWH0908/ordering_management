@@ -8,12 +8,12 @@
       </div>
       <div class="section">
         <div class="box2">
-          <lineEcharts></lineEcharts>
+          <lineEcharts :getRecentlyDay="getRecentlyDay" :saleMoneyData="saleMoneyData"></lineEcharts>
         </div>
       </div>
       <div class="section">
         <div class="box3">
-          <pieEcharts></pieEcharts>
+          <pieEcharts :foodTypeArr="foodTypeArr" :saleTypeData="saleTypeData"></pieEcharts>
         </div>
       </div>
     </full-page>
@@ -48,11 +48,14 @@ export default {
           // "#ba5be9",
           // "#b4b8ab"
         ]
-      }
+      },
+      seriesDayMoney: [], //保存与数据库格式一致的近15天的日期的营业额
+      foodTypeData: [] //保存与数据库格式一致的菜品分类销售量
     };
   },
   computed: {
     ...mapGetters(["currentOrderData", "foodList"]),
+    //柱状图数据***************************************************
     //返回店铺已有的所有菜品数组
     allFoodArr() {
       let newArr = [];
@@ -64,7 +67,6 @@ export default {
     //根据菜品名称，在该店铺的订单数据中检索对应的数量
     hotSaleData() {
       //首先根据菜品数组，创建一个菜品数组和对应销售量的对象数组
-      console.log("currentOrder数据改变");
       let dataArr = [];
       this.foodList.forEach(foodItem => {
         let newObj = {};
@@ -84,10 +86,98 @@ export default {
       });
       //从数据数组中抽离出销量
       let newArr = [];
-      dataArr.forEach(item=>{
-        newArr.push(item.foodCount)
-      })
-      return newArr
+      dataArr.forEach(item => {
+        newArr.push(item.foodCount);
+      });
+      return newArr;
+    },
+
+    // 折线图数据***************************************************
+    // 获取当前日期前15天的日期用于传入折线图作为x轴
+    getRecentlyDay() {
+      let n = 15;
+      let dayArr = []; //存储15天日期
+      for (let i = n; i >= 1; i--) {
+        var now = new Date();
+        now.setDate(now.getDate() - i);
+        dayArr.push(
+          this.addZero(now.getMonth() + 1) +
+            "月" +
+            this.addZero(now.getDate()) +
+            "日"
+        );
+        let newObj = {};
+        newObj.time =
+          now.getFullYear() +
+          "-" +
+          this.addZero(now.getMonth() + 1) +
+          "-" +
+          this.addZero(now.getDate());
+        newObj.money = 0;
+        this.seriesDayMoney.push(newObj);
+      }
+      return dayArr;
+    },
+    //得出15天的营业额
+    saleMoneyData() {
+      this.currentOrderData.forEach(orderItem => {
+        this.seriesDayMoney.forEach(dataItem => {
+          if (dataItem.time == orderItem.buyTime.substring(0, 10)) {
+            orderItem.foodList.forEach(foodItem => {
+              dataItem.money += foodItem.foodCount * foodItem.foodData.newMoney;
+            });
+          }
+        });
+      });
+      //从数据数组中抽离出销量
+      let newArr = [];
+      this.seriesDayMoney.forEach(item => {
+        newArr.push(item.money);
+      });
+      return newArr;
+    },
+
+    //饼图数据******************************************************
+    foodTypeArr() {
+      let newArr = [];
+      this.foodList.forEach(item => {
+        if (newArr.indexOf(item.foodType) == -1) {
+          //尚未添加的分类
+          newArr.push(item.foodType);
+          let newObj = {};
+          newObj.typeName = item.foodType;
+          newObj.saleTimes = 0; //初始化已售出为0
+          this.foodTypeData.push(newObj);
+        }
+      });
+      return newArr;
+    },
+    //得出分类销售量
+    saleTypeData() {
+      this.currentOrderData.forEach(orderItem => {
+        this.foodTypeData.forEach(dataItem => {
+          orderItem.foodList.forEach(foodItem => {
+            if (dataItem.typeName == foodItem.foodData.foodType) {
+              dataItem.saleTimes += foodItem.foodCount;
+            }
+          });
+        });
+      });
+      //从数据数组中抽离出销量
+      let newArr = [];
+      this.foodTypeData.forEach(item => {
+        let newObj = {};
+        newObj.name = item.typeName;
+        newObj.value = item.saleTimes;
+        newArr.push(newObj);
+      });
+      return newArr;
+    }
+  },
+  methods: {
+    //补零函数
+    addZero(time) {
+      return time < 10 ? "0" + time : time;
     }
   },
   components: {

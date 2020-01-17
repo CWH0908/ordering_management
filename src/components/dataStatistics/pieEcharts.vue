@@ -6,12 +6,22 @@
 
 <script>
 export default {
+  props: {
+    foodTypeArr: {
+      type: Array,
+      default: () => []
+    },
+    saleTypeData:{
+        type:Array,
+        default:()=>[]
+    }
+  },
   computed: {
     pieOrgOptions() {
       return {
         title: {
-          text: "某站点用户访问来源", //主标题
-          subtext: "纯属虚构", //副标题
+          text: "菜品分类销售情况", //主标题
+          subtext: "根据所售菜品的分类进行统计", //副标题
           x: "center" //x轴方向对齐方式
         },
         tooltip: {
@@ -21,21 +31,15 @@ export default {
         legend: {
           orient: "vertical",
           bottom: "bottom",
-          data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
+          data: this.foodTypeArr
         },
         series: [
           {
-            name: "访问来源",
+            name: "各分类销售额",
             type: "pie",
             radius: "55%",
             center: ["50%", "60%"],
-            data: [
-              { value: 335, name: "直接访问" },
-              { value: 310, name: "邮件营销" },
-              { value: 234, name: "联盟广告" },
-              { value: 135, name: "视频广告" },
-              { value: 1548, name: "搜索引擎" }
-            ],
+            data: this.saleTypeData,
             itemStyle: {
               emphasis: {
                 shadowBlur: 10,
