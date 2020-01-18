@@ -28,3 +28,7 @@ export const oldLength = (state) => {
 export const newOrderData = (state) => {
   return state.newOrderData
 }
+
+export const hasCancelOrder = (state) => {
+  return state.hasCancelOrder
+}

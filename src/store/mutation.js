@@ -32,6 +32,11 @@
     //设置未查看的订单数据
     set_newOrderData(state, newOrderData) {
       state.newOrderData = newOrderData
-    }
+    },
+
+    //设置有取消订单请求
+    set_hasCancelOrder(state, hasCancelOrder) {
+      state.hasCancelOrder = hasCancelOrder
+    },
   }
   export default mutations;

@@ -83,7 +83,8 @@ export default {
     ...mapMutations({
       set_hasNewOrder: "set_hasNewOrder",
       set_currentOrderData: "set_currentOrderData",
-      set_newOrderData: "set_newOrderData"
+      set_newOrderData: "set_newOrderData",
+      set_hasCancelOrder: "set_hasCancelOrder"
     }),
     //连接到webSocket
     connectWebScket() {
@@ -123,6 +124,11 @@ export default {
       } else {
         this.set_hasNewOrder(false);
       }
+      if (redata == "收到取消订单申请") {
+        this.set_hasCancelOrder(true); //将是否有取消订单请求的vuex数据置为true
+      } else {
+        this.set_hasCancelOrder(false);
+      }
     },
     //客户端发送数据
     websocketsend(Data) {
@@ -158,6 +164,19 @@ export default {
         setTimeout(() => {
           this.set_hasNewOrder(false); //请求后将值置为false
           this.isShowNewOrderTip = true;
+        }, 3000);
+      }
+    },
+    hasCancelOrder(newVal) {
+      if (newVal) {
+        console.log("有新的取消订单申请，重新请求数据库");
+        this._getShopOrder();
+        this.$message({
+          message: "有新的取消订单申请",
+          type: "info"
+        });
+        setTimeout(() => {
+          this.set_hasCancelOrder(false); //请求后将值置为false
         }, 3000);
       }
     }

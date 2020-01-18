@@ -8,7 +8,22 @@
       <el-table-column align="center" prop="buyTime" label="下单时间"></el-table-column>
       <el-table-column align="center" label="操作">
         <template class="operation" slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
+          <el-button
+            class="operationButton"
+            v-if="scope.row.state == 'askCancel'"
+            type="danger"
+            size="mini"
+            @click="askCancel(scope.$index, scope.row)"
+          >申请取消</el-button>
+          <el-button
+            class="operationButton"
+            plain
+            disabled
+            v-if="scope.row.state == 'cancelSuccess'"
+            type="danger"
+            size="mini"
+          >已取消</el-button>
+          <el-button class="checkButton" size="mini" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -58,7 +73,7 @@
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import { getShopOrder } from "../../API/getOrder";
+import { getShopOrder, updateOrderState } from "../../API/getOrder";
 import orderDetail from "../orderAdmin/orderDetail";
 
 export default {
@@ -81,7 +96,8 @@ export default {
       "hasNewOrder",
       "currentOrderData",
       "oldLength",
-      "newOrderData"
+      "newOrderData",
+      "hasCancelOrder"
     ]),
     tableData() {
       let allOrder = JSON.parse(JSON.stringify(this.currentOrderData));
@@ -110,13 +126,15 @@ export default {
   },
   mounted() {
     // this.oldLength = this.currentOrderData.length;
+    // console.log(this.currentOrderData);
   },
   methods: {
     ...mapMutations({
       set_hasNewOrder: "set_hasNewOrder",
       set_currentOrderData: "set_currentOrderData",
       set_oldLength: "set_oldLength",
-      set_newOrderData: "set_newOrderData"
+      set_newOrderData: "set_newOrderData",
+      set_hasCancelOrder: "set_hasCancelOrder"
     }),
     //请求数据库获取最新订单数据
     async _getShopOrder() {
@@ -125,6 +143,10 @@ export default {
       this.set_currentOrderData(orderData.reverse());
       //更新显示新的订单样式
       // this.setNewOrder(orderData.length);
+    },
+    //更新订单的状态
+    async _updateOrderState(orderItem, state) {
+      await updateOrderState(orderItem, state);
     },
     //分页操作
     handleSizeChange(val) {
@@ -138,28 +160,49 @@ export default {
       this.orderDataItem = row;
       this.openDetail();
     },
-    //新订单样式，传入参数为新的总数据长度
-    // setNewOrder(newLength) {
-    //   this.newOrderData = []; //先将新订单数据置为空
-    //   this.newLength = newLength;
-    //   if (this.newLength - this.oldLength > 0) {
-    //     //有新订单，显示提示按钮
-    //     this.isShowNewOrderTip = true;
-    //     //更新newOrder数据
-    //     for (let i = 0; i < this.currentOrderData.length; i++) {
-    //       if (i < this.newLength - this.oldLength) {
-    //         //小于新订单长度的都为新的订单
-    //         this.newOrderData.push(this.currentOrderData[i]);
-    //       }
-    //     }
-    //   }
-    // },
+    //申请取消订单
+    askCancel(index, row) {
+      this.$confirm("是否同意取消该订单?", "提示", {
+        confirmButtonText: "确定取消",
+        cancelButtonText: "拒绝取消",
+        type: "warning"
+      })
+        .then(() => {
+          //在vuex 和 数据库 中 将该订单state设为cancelSuccess
+          this.currentOrderData.forEach(orderItem => {
+            if (orderItem.orderID == row.orderID) {
+              orderItem.state = "cancelSuccess";
+            }
+          });
+          this.set_currentOrderData(this.currentOrderData);
+
+          this._updateOrderState(row, "cancelSuccess");
+
+          this.$message({
+            type: "success",
+            message: "已取消该订单"
+          });
+        })
+        .catch(() => {
+          //在vuex 和 数据库 中 将该订单state设为cancelFail
+          this.currentOrderData.forEach(orderItem => {
+            if (orderItem.orderID == row.orderID) {
+              orderItem.state = "cancelFail";
+            }
+          });
+          this.set_currentOrderData(this.currentOrderData);
+
+          this._updateOrderState(row, "cancelFail");
+
+          this.$message({
+            type: "info",
+            message: "已拒绝取消该订单"
+          });
+        });
+    },
     //打开查看新订单数据
     openNewOrderDiv() {
       this.isShowNewOrderTip = false; //点击后关闭新订单提示
-      //同时将此时的oldLength设为newLength
-      // this.oldLength = this.newLength;
-      // this.set_oldLength(this.newLength);
       this.newLength = 0;
       this.isShowNewOrderDiv = true;
       this.set_hasNewOrder(false); //查看后后将是否有新订单值置为false
@@ -188,6 +231,19 @@ export default {
           this.isShowNewOrderTip = true;
         }, 3000);
       }
+    },
+    hasCancelOrder(newVal) {
+      if (newVal) {
+        console.log("有取消订单请求，重新请求数据库");
+        this._getShopOrder();
+        this.$message({
+          message: "有新的取消订单申请",
+          type: "info"
+        });
+        setTimeout(() => {
+          this.set_hasCancelOrder(false); //请求后将值置为false
+        }, 3000);
+      }
     }
   },
   components: {
@@ -198,6 +254,14 @@ export default {
 
 <style lang="less" scoped>
 .orderAdmin {
+  .operationButton {
+    float: right;
+  }
+  .checkButton {
+    position: absolute;
+    right: 8rem;
+    bottom: 0.8rem;
+  }
   .orderDetailPart {
     position: fixed;
     top: 8vh;
