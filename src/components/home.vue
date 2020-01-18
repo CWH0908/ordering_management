@@ -28,6 +28,7 @@ import topHeader from "../components/topHeader/topHeader";
 import { webSocketUrl } from "../API/webSocketUrl";
 import { mapMutations, mapGetters } from "vuex";
 import { getShopOrder } from "../API/getOrder";
+import { getHomeShoplist } from "../API/getHomeShopList";
 
 export default {
   components: {
@@ -57,6 +58,13 @@ export default {
     ])
   },
   methods: {
+    ...mapMutations({
+      set_hasNewOrder: "set_hasNewOrder",
+      set_currentOrderData: "set_currentOrderData",
+      set_newOrderData: "set_newOrderData",
+      set_hasCancelOrder: "set_hasCancelOrder",
+      set_currentShopBaseData: "set_currentShopBaseData"
+    }),
     //请求数据库获取最新订单数据
     async _getShopOrder() {
       let orderData = await getShopOrder(this.currentShop.shopID);
@@ -64,6 +72,11 @@ export default {
       this.set_currentOrderData(orderData.reverse());
       //更新显示新的订单样式
       this.setNewOrder(orderData.length);
+    },
+    //获取店铺基本信息
+    async _getHomeShoplist() {
+      let temp = await getHomeShoplist(this.currentShop.shopID);
+      this.set_currentShopBaseData(temp);
     },
     //新订单样式，传入参数为新的总数据长度
     setNewOrder(newLength) {
@@ -80,12 +93,6 @@ export default {
         this.set_newOrderData(newArr); //设置未查看的订单数据
       }
     },
-    ...mapMutations({
-      set_hasNewOrder: "set_hasNewOrder",
-      set_currentOrderData: "set_currentOrderData",
-      set_newOrderData: "set_newOrderData",
-      set_hasCancelOrder: "set_hasCancelOrder"
-    }),
     //连接到webSocket
     connectWebScket() {
       this.initWebSocket();
@@ -157,6 +164,7 @@ export default {
       if (newVal) {
         console.log("有新订单，重新请求数据库");
         this._getShopOrder();
+        this._getHomeShoplist();
         this.$message({
           message: "接到新的订单",
           type: "success"
@@ -171,6 +179,7 @@ export default {
       if (newVal) {
         console.log("有新的取消订单申请，重新请求数据库");
         this._getShopOrder();
+        this._getHomeShoplist();
         this.$message({
           message: "有新的取消订单申请",
           type: "info"

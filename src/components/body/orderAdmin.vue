@@ -75,6 +75,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import { getShopOrder, updateOrderState } from "../../API/getOrder";
 import orderDetail from "../orderAdmin/orderDetail";
+import { updateShopSaleTimes } from "../../API/updateShopSaleTimes";
 
 export default {
   data() {
@@ -97,7 +98,8 @@ export default {
       "currentOrderData",
       "oldLength",
       "newOrderData",
-      "hasCancelOrder"
+      "hasCancelOrder",
+      "currentShopBaseData"
     ]),
     tableData() {
       let allOrder = JSON.parse(JSON.stringify(this.currentOrderData));
@@ -124,17 +126,14 @@ export default {
       set() {}
     }
   },
-  mounted() {
-    // this.oldLength = this.currentOrderData.length;
-    // console.log(this.currentOrderData);
-  },
   methods: {
     ...mapMutations({
       set_hasNewOrder: "set_hasNewOrder",
       set_currentOrderData: "set_currentOrderData",
       set_oldLength: "set_oldLength",
       set_newOrderData: "set_newOrderData",
-      set_hasCancelOrder: "set_hasCancelOrder"
+      set_hasCancelOrder: "set_hasCancelOrder",
+      set_currentShopBaseData: "set_currentShopBaseData"
     }),
     //请求数据库获取最新订单数据
     async _getShopOrder() {
@@ -177,6 +176,15 @@ export default {
           this.set_currentOrderData(this.currentOrderData);
 
           this._updateOrderState(row, "cancelSuccess");
+
+          //店铺售出量 - 1
+          this.currentShopBaseData.saleTimes -= 1;
+          this.set_currentShopBaseData(this.currentShopBaseData);
+ 
+          updateShopSaleTimes(
+            this.currentShopBaseData.shopID,
+            this.currentShopBaseData
+          );
 
           this.$message({
             type: "success",
