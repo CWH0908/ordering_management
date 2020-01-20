@@ -39,7 +39,7 @@
 
 <script>
 import { Toast } from "vant";
-import { login } from "../../API/shopRequire";
+import { login, register, inputRegister } from "../../API/shopRequire";
 import { mapMutations } from "vuex";
 import { getFoodList } from "../../API/getFoodList";
 import { getShopOrder } from "../../API/getOrder";
@@ -57,7 +57,7 @@ export default {
       set_currentShop: "set_currentShop",
       set_foodList: "set_foodList",
       set_currentOrderData: "set_currentOrderData",
-      set_oldLength:"set_oldLength"
+      set_oldLength: "set_oldLength"
     }),
     shopLogin() {
       this._shopLogin();
@@ -107,7 +107,7 @@ export default {
       let orderData = await getShopOrder(shopID);
       // debugger
       this.set_currentOrderData(orderData.reverse());
-      this.set_oldLength(orderData.length);//一登录即设置最初的订单长度
+      this.set_oldLength(orderData.length); //一登录即设置最初的订单长度
     },
 
     //商家注册
@@ -115,7 +115,20 @@ export default {
       this._shopRegister();
     },
     async _shopRegister() {
-      Toast("商家注册");
+      // Toast("商家注册");
+      if (this.inputAccount != "" && this.inputPwd != "") {
+        let temp = await register(this.inputAccount);
+        console.log("查找回来的数据temp", temp);
+        if (temp) {
+          Toast("该账号已注册");
+        } else {
+          await inputRegister(this.inputAccount, this.inputPwd);
+          //写入注册的账号密码到数据库
+          Toast("注册成功");
+        }
+      } else {
+        Toast("请完善账号密码");
+      }
     }
   }
 };
