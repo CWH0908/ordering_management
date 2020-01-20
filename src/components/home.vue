@@ -136,6 +136,10 @@ export default {
       } else {
         this.set_hasCancelOrder(false);
       }
+      if (redata == "销量更新") {
+        console.log("销量更新，重新请求数据库")
+        this._getShopOrder();//重新请求订单数据
+      }
     },
     //客户端发送数据
     websocketsend(Data) {

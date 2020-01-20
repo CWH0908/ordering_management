@@ -76,13 +76,16 @@ export default {
         dataArr.push(newObj);
       });
       this.currentOrderData.forEach(orderItem => {
-        orderItem.foodList.forEach(foodItem => {
-          dataArr.forEach(dataItem => {
-            if (dataItem.foodID == foodItem.foodData.foodID) {
-              dataItem.foodCount += foodItem.foodCount;
-            }
+        //已送达的订单才加入统计
+        if (orderItem.state == "arrive") {
+          orderItem.foodList.forEach(foodItem => {
+            dataArr.forEach(dataItem => {
+              if (dataItem.foodID == foodItem.foodData.foodID) {
+                dataItem.foodCount += foodItem.foodCount;
+              }
+            });
           });
-        });
+        }
       });
       //从数据数组中抽离出销量
       let newArr = [];
@@ -121,13 +124,17 @@ export default {
     //得出15天的营业额
     saleMoneyData() {
       this.currentOrderData.forEach(orderItem => {
-        this.seriesDayMoney.forEach(dataItem => {
-          if (dataItem.time == orderItem.buyTime.substring(0, 10)) {
-            orderItem.foodList.forEach(foodItem => {
-              dataItem.money += foodItem.foodCount * foodItem.foodData.newMoney;
-            });
-          }
-        });
+        //已送达的订单才加入统计
+        if (orderItem.state == "arrive") {
+          this.seriesDayMoney.forEach(dataItem => {
+            if (dataItem.time == orderItem.buyTime.substring(0, 10)) {
+              orderItem.foodList.forEach(foodItem => {
+                dataItem.money +=
+                  foodItem.foodCount * foodItem.foodData.newMoney;
+              });
+            }
+          });
+        }
       });
       //从数据数组中抽离出销量
       let newArr = [];
@@ -155,13 +162,16 @@ export default {
     //得出分类销售量
     saleTypeData() {
       this.currentOrderData.forEach(orderItem => {
-        this.foodTypeData.forEach(dataItem => {
-          orderItem.foodList.forEach(foodItem => {
-            if (dataItem.typeName == foodItem.foodData.foodType) {
-              dataItem.saleTimes += foodItem.foodCount;
-            }
+        //已送达的订单才加入统计
+        if (orderItem.state == "arrive") {
+          this.foodTypeData.forEach(dataItem => {
+            orderItem.foodList.forEach(foodItem => {
+              if (dataItem.typeName == foodItem.foodData.foodType) {
+                dataItem.saleTimes += foodItem.foodCount;
+              }
+            });
           });
-        });
+        }
       });
       //从数据数组中抽离出销量
       let newArr = [];

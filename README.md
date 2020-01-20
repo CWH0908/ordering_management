@@ -36,7 +36,7 @@
 
 ### 2020-01-20  上午，增加管理端商家注册逻辑，管理端所有内容基本完成
 
-> A Vue.js project
+> A Vue.js project  订餐系统管理端
 
 ## Build Setup
 
