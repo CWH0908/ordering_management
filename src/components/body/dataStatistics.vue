@@ -139,7 +139,7 @@ export default {
       //从数据数组中抽离出销量
       let newArr = [];
       this.seriesDayMoney.forEach(item => {
-        newArr.push(item.money);
+        newArr.push(item.money.toFixed(2));
       });
       return newArr;
     },

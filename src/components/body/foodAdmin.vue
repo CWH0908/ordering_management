@@ -1,7 +1,11 @@
 <template>
   <div class="foodAdmin">
     <div class="container">
-      <ul>
+      <div class="search">
+        <el-input placeholder="搜索菜品" v-model="searchFoodItem" clearable></el-input>
+      </div>
+
+      <ul v-if="searchFoodItem==''">
         <!-- 新增栏目 -->
         <li class="addItem" @click="openModify({})">
           <div class="addIcon">
@@ -21,6 +25,25 @@
           </div>
         </li>
       </ul>
+
+      <div v-else>
+        <!-- 搜索到的菜品项 -->
+        <div style="color:gray;margin-top:5rem;" v-if="searchFoodList.length==0">搜索不到该菜品</div>
+        <ul v-else>
+          <li v-for="(item,index) in searchFoodList" :key="index" @click="openModify(item)">
+            <div>
+              <img :src="getPicUrl(item.pic_url)" alt />
+              <div class="textPart">
+                <p class="foodName">{{item.foodName}}</p>
+                <p>{{item.foodType}}</p>
+                <p>{{item.foodInfo}}</p>
+                <p>￥{{item.newMoney}}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
       <!-- 编辑框 -->
       <div class="modifyFoodPart" v-if="isShowModifyPart" @click.self="changeIsShow">
         <modifyFood
@@ -53,7 +76,9 @@ export default {
     return {
       isShowModifyPart: false, //是否显示编辑框
       currentFoodItem: {}, //当前点击的菜品信息传值到编辑框
-      isNewEdit: false //是否为新增菜品的编辑框
+      isNewEdit: false, //是否为新增菜品的编辑框
+      searchFoodItem: "", //搜索菜品
+      searchFoodList: "" //搜索得到的菜品列表
     };
   },
   created() {
@@ -148,6 +173,15 @@ export default {
       } else {
         document.getElementsByTagName("body")[0].style.overflow = "auto";
       }
+    },
+    searchFoodItem(newVal) {
+      let newArr = [];
+      this.foodList.forEach(foodItem => {
+        if (foodItem.foodName.includes(newVal)) {
+          newArr.push(foodItem);
+        }
+      });
+      this.searchFoodList = JSON.parse(JSON.stringify(newArr));
     }
   },
   components: {
@@ -159,6 +193,11 @@ export default {
 <style lang="less" scoped>
 .foodAdmin {
   .container {
+    .search {
+      width: 30%;
+      margin-top: 2rem;
+      padding-left: 3rem;
+    }
     ul {
       padding: 2rem 3rem;
       text-align: left;

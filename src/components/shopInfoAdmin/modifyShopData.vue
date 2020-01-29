@@ -95,8 +95,8 @@ export default {
       currentShopName: "",
       currentMallTypeIndex: 0,
       //   currentMallType: "",
-      currentStratFee: "",
-      currentSendFee: "",
+      currentStratFee: 0,
+      currentSendFee: 0,
       currentPhone: "",
       currentOpenTime: "",
       currentCloseTime: "",
@@ -161,8 +161,8 @@ export default {
       if (
         this.currentShopName != "" &&
         this.currentMallType != "" &&
-        this.currentStratFee != "" &&
-        this.currentSendFee != "" &&
+        // this.currentStratFee != "" &&
+        // this.currentSendFee != "" &&
         this.currentPhone != "" &&
         this.currentOpenTime != "" &&
         this.currentCloseTime != "" &&
