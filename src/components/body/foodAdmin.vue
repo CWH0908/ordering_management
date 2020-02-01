@@ -15,10 +15,10 @@
         <!-- 现有菜品项 -->
         <li v-for="(item,index) in foodList" :key="index" @click="openModify(item)">
           <div>
-            <img :src="getPicUrl(item.pic_url)" alt />
+            <img v-lazy="getPicUrl(item.pic_url)" alt />
             <div class="textPart">
               <p class="foodName">{{item.foodName}}</p>
-              <p>{{item.foodType}}</p>
+              <p style="color:gray;">{{item.foodType}}</p>
               <p>{{item.foodInfo}}</p>
               <p>￥{{item.newMoney}}</p>
             </div>
@@ -32,7 +32,7 @@
         <ul v-else>
           <li v-for="(item,index) in searchFoodList" :key="index" @click="openModify(item)">
             <div>
-              <img :src="getPicUrl(item.pic_url)" alt />
+              <img v-lazy="getPicUrl(item.pic_url)" alt />
               <div class="textPart">
                 <p class="foodName">{{item.foodName}}</p>
                 <p>{{item.foodType}}</p>
@@ -205,7 +205,7 @@ export default {
         float: left;
         border: 1px dotted rgba(0, 0, 0, 0.4);
         background: white;
-        line-height: 35.6vh;
+        line-height: 14rem;
         text-align: center;
         .addIcon {
           font-size: 3rem;
@@ -214,7 +214,7 @@ export default {
       }
       li {
         display: inline-block;
-        height: 35.6vh;
+        height: 14rem;
         padding: 1rem;
         border: 1px solid gray;
         box-shadow: 10px 7px 20px;

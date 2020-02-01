@@ -9,10 +9,10 @@
           :show-file-list="false"
           :before-upload="beforeUpload"
         >
-          <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+          <img v-if="imageUrl" v-lazy="imageUrl" class="avatar" />
           <div v-else>
             <i v-if="isNewEdit" class="el-icon-plus avatar-uploader-icon"></i>
-            <img v-else :src="firstPicUrl" class="avatar" />
+            <img v-else v-lazy="firstPicUrl" class="avatar" />
           </div>
         </el-upload>
       </div>-->
@@ -69,6 +69,7 @@ import { mapGetters } from "vuex";
 import axios from "axios";
 import { qiniuDomain } from "../../API/qiniuDomain"; //引入七牛外链
 import upload from "../base/upload";
+import {RemoteUrl} from "../../API/RemoteServer"
 
 export default {
   props: {
@@ -269,7 +270,8 @@ export default {
       this.currentPicUrl = keyname;
 
       // 从后端获取上传凭证token,此处在前端配置proxyTable代理进行跨域
-      axios.get("/upload/token").then(res => {
+      // axios.get("/upload/token").then(res => {
+      axios.get("http://49.235.92.173:8082/upload/remote/token").then(res => {
         const formdata = new FormData();
         formdata.append("file", req.file);
         formdata.append("token", res.data);
@@ -315,7 +317,7 @@ export default {
     right: 0;
     margin: auto;
     width: 24vw;
-    height: 87vh;
+    height: 35rem;
     background-color: white;
     border-radius: 8px;
     .uploadPart {
@@ -368,7 +370,7 @@ export default {
           display: inline-block;
           height: 32px;
           line-height: 32px;
-          width: 23%;
+          width: 4rem;
           font-size: 0.8rem;
           text-align: left;
         }

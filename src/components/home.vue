@@ -181,11 +181,11 @@ export default {
     },
     hasCancelOrder(newVal) {
       if (newVal) {
-        console.log("有新的取消订单申请，重新请求数据库");
+        console.log("有新的订单进度，重新请求数据库");
         this._getShopOrder();
         this._getHomeShoplist();
         this.$message({
-          message: "有新的取消订单申请",
+          message: "有新的订单进度",
           type: "info"
         });
         setTimeout(() => {

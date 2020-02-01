@@ -368,6 +368,9 @@ export default {
       .Time {
         text-align: left;
         padding-left: 2.1rem;
+        .el-date-editor--timerange{
+          width: 14rem;
+        }
         span {
           display: inline-block;
           height: 32px;

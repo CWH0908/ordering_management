@@ -1,7 +1,7 @@
 <template>
   <div class="sign">
     <div class="container">
-      <h3>商家登录</h3>
+      <h3>订餐系统-商家登录</h3>
       <transition appear mode="out-in">
         <div class="signBox">
           <el-input
@@ -12,6 +12,7 @@
             clearable
           ></el-input>
           <el-input
+            show-password
             class="input"
             prefix-icon="el-icon-edit-outline"
             placeholder="请输入密码"
@@ -139,10 +140,10 @@ export default {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#4169e1), to(#b0c4de));
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#0091fc), to(#b0c4de));
   .container {
-    width: 25vw;
-    height: 50vh;
+    width: 20rem;
+    height: 17rem;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -154,11 +155,11 @@ export default {
     h3 {
       font-size: 1.5rem;
       color: white;
-      padding: 2rem 0;
+      padding: 1rem 0;
     }
     .signBox {
       width: 100%;
-      height: 33vh;
+      height: 12rem;
       position: absolute;
       left: 50%;
       top: 50%;
@@ -172,27 +173,22 @@ export default {
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
       }
-      .sign-up-button {
-        // width: 82vw;
-        height: 6.5vh;
-        display: inline-block;
-        text-align: center;
-        border-radius: 20px;
-        margin-right: 6.8rem;
-      }
-      .sign-in-button {
-        // width: 82vw;
-        height: 6.5vh;
-        display: inline-block;
-        text-align: center;
-        border-radius: 20px;
-      }
       .opration {
-        display: block;
+        display: flex;
+        justify-content: space-between;
         margin: 0 1rem;
-        .forgetButon {
-          padding-left: 1rem;
-          padding-right: 1.5rem;
+        .sign-up-button {
+          height: 2.5rem;
+          display: inline-block;
+          text-align: center;
+          border-radius: 20px;
+          // margin-right: 6.8rem;
+        }
+        .sign-in-button {
+          height: 2.5rem;
+          display: inline-block;
+          text-align: center;
+          border-radius: 20px;
         }
       }
     }

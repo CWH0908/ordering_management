@@ -13,7 +13,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
 //引入 vant
-// import Vant from 'vant';
+import Vant from 'vant';
 import 'vant/lib/index.css';
 import {
   Field,
@@ -25,7 +25,8 @@ import {
   RadioGroup,
   Radio,
   Switch,
-  Uploader
+  Uploader,
+  Lazyload
 } from 'vant';
 Vue.use(DropdownMenu).use(DropdownItem);
 Vue.use(Collapse).use(CollapseItem);
@@ -35,7 +36,10 @@ Vue.use(Field);
 Vue.use(Button);
 Vue.use(Switch)
 Vue.use(Uploader)
-// Vue.use(Vant);
+Vue.use(Lazyload,{
+  loading:require("./image/loading3.gif")
+})
+Vue.use(Vant);
 
 //按需引入 echarts
 import ECharts from 'vue-echarts'

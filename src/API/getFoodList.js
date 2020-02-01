@@ -1,6 +1,8 @@
 import axios from "axios"
+import {RemoteUrl} from "../API/RemoteServer"
+
 export function getFoodList(shopID) {
-  return axios.get("http://localhost:8081/home_foodList", {
+  return axios.get(RemoteUrl+"home_foodList", {
     params: shopID
   }).then(res => {
     return Promise.resolve(res.data);

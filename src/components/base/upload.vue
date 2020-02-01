@@ -18,6 +18,7 @@
 
 <script>
 import { qiniuDomain } from "../../API/qiniuDomain";
+import {RemoteUrl} from "../../API/RemoteServer"
 import axios from "axios";
 export default {
   props: {
@@ -73,7 +74,8 @@ export default {
       this.$emit("set_currentPicUrl", keyname);
 
       // 从后端获取上传凭证token,此处在前端配置proxyTable代理进行跨域
-      axios.get("/upload/token").then(res => {
+      // axios.get("/upload/token").then(res => {
+      axios.get("http://49.235.92.173:8082/upload/remote/token").then(res => {
         const formdata = new FormData();
         formdata.append("file", req.file);
         formdata.append("token", res.data);

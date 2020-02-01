@@ -1,8 +1,9 @@
 import axios from "axios"
+import {RemoteUrl} from "../API/RemoteServer"
 
 //更新菜品
 export function updateFoodList(foodID, foodItem) {
-  return axios.get("http://localhost:8081/updateFoodList", {
+  return axios.get(RemoteUrl+"updateFoodList", {
     params: {
       foodID,
       foodItem
@@ -14,7 +15,7 @@ export function updateFoodList(foodID, foodItem) {
 
 //删除菜品
 export function deleteFoodItem(foodID) {
-  return axios.get("http://localhost:8081/deleteFoodItem", {
+  return axios.get(RemoteUrl+"deleteFoodItem", {
     params: {
       foodID
     }
@@ -25,7 +26,7 @@ export function deleteFoodItem(foodID) {
 
 //新增菜品
 export function insertFoodItem(foodItem) {
-  return axios.get("http://localhost:8081/insertFoodItem", {
+  return axios.get(RemoteUrl+"insertFoodItem", {
     params: {
       foodItem
     }
@@ -36,7 +37,7 @@ export function insertFoodItem(foodItem) {
 
 //修改菜品类型
 export function modifyFoodType(newTypeArr) {
-  return axios.get("http://localhost:8081/modifyFoodType", {
+  return axios.get(RemoteUrl+"modifyFoodType", {
     params: {
       newTypeArr
     }
@@ -47,7 +48,7 @@ export function modifyFoodType(newTypeArr) {
 
 //移除菜品分类及其菜品分类
 export function removeFoodType(foodType) {
-  return axios.get("http://localhost:8081/removeFoodType", {
+  return axios.get(RemoteUrl+"removeFoodType", {
     params: {
       foodType
     }

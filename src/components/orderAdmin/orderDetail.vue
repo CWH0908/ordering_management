@@ -5,7 +5,7 @@
         <ul>
           <li class="foodLi" v-for="(foodItem,index) in orderDataItem.foodList" :key="index">
             <div>
-              <img :src="getPicUrl(foodItem.foodData.pic_url)" alt />
+              <img v-lazy="getPicUrl(foodItem.foodData.pic_url)" alt />
               <p class="name">{{foodItem.foodData.foodName}}</p>
               <p class="count">
                 <span>x</span>
@@ -160,7 +160,7 @@ export default {
           }
           .name {
             display: inline-block;
-            width: 50%;
+            width: 5rem;
             font-weight: normal;
             font-size: 1rem;
             overflow: hidden;
@@ -192,14 +192,14 @@ export default {
       .sendFeeLi {
         .text {
           display: inline-block;
-          width: 70%;
+          width: 8.5rem;
         }
         .sendFee {
           display: inline-block;
           width: 20%;
           font-size: 0.8rem;
           color: gray;
-          text-align: right;
+          text-align: left;
           vertical-align: text-bottom;
           span {
             font-size: 0.6rem;
@@ -209,6 +209,7 @@ export default {
       .bottomLi {
         .sumPrice {
           float: right;
+          padding-right: 1rem;
           display: inline-block;
           color: red;
           span {

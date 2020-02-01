@@ -3,7 +3,7 @@
     <div class="container">
       <!-- 头部信息 -->
       <header :style="bgStyle">
-        <img :src="getPicUrl(currentShopBaseData.pic_url)" alt />
+        <img v-lazy="getPicUrl(currentShopBaseData.pic_url)" alt />
         <div class="rightPart">
           <p>店铺ID:{{currentShopBaseData.shopID}}</p>
           <p>
@@ -186,8 +186,8 @@ export default {
         to(#b0c4de)
       );
       img {
-        width: 12vw;
-        height: 12vw;
+        width: 7rem;
+        height: 7rem;
         box-shadow: 8px 8px 8px;
         border-radius: 8px;
       }
@@ -195,7 +195,7 @@ export default {
         display: inline-block;
         padding-left: 2rem;
         /deep/ .el-rate__icon {
-          color: red !important;
+          // color: red !important;
         }
         p {
           font-weight: 900;

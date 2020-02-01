@@ -4,9 +4,9 @@
     <el-table :data="tableData" border style="width: 100%;margin-top:2rem" stripe>
       <el-table-column align="center" prop="addressData.tel" label="联系方式" width="180"></el-table-column>
       <el-table-column align="center" prop="addressData.name" label="收货人" width="180"></el-table-column>
-      <el-table-column align="center" prop="addressData.address" label="收货地址" width="180"></el-table-column>
+      <el-table-column align="center" prop="addressData.address" label="收货地址" width="280"></el-table-column>
       <el-table-column align="center" prop="buyTime" label="下单时间"></el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column  label="操作">
         <template class="operation" slot-scope="scope">
           <el-button
             class="operationButton"
@@ -23,6 +23,21 @@
             type="danger"
             size="mini"
           >已取消</el-button>
+          <el-button
+            class="operationButton"
+            plain
+            disabled
+            v-if="scope.row.state == 'waiting'||scope.row.state == 'cancelFail'||scope.row.state == 'banCancel'"
+            type="primary"
+            size="mini"
+          >未送达</el-button>
+          <el-button
+            class="operationButton"
+            disabled
+            v-if="scope.row.state == 'arrive'"
+            type="primary"
+            size="mini"
+          >已送达</el-button>
           <el-button class="checkButton" size="mini" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
         </template>
       </el-table-column>
@@ -180,7 +195,7 @@ export default {
           //店铺售出量 - 1
           this.currentShopBaseData.saleTimes -= 1;
           this.set_currentShopBaseData(this.currentShopBaseData);
- 
+
           updateShopSaleTimes(
             this.currentShopBaseData.shopID,
             this.currentShopBaseData
@@ -245,7 +260,7 @@ export default {
         console.log("有取消订单请求，重新请求数据库");
         this._getShopOrder();
         this.$message({
-          message: "有新的取消订单申请",
+          message: "有新的订单进度",
           type: "info"
         });
         setTimeout(() => {
@@ -263,12 +278,12 @@ export default {
 <style lang="less" scoped>
 .orderAdmin {
   .operationButton {
-    float: right;
+    // float: right;
   }
   .checkButton {
-    position: absolute;
-    right: 8rem;
-    bottom: 0.8rem;
+    // position: absolute;
+    // right: 8rem;
+    // bottom: 0.8rem;
   }
   .orderDetailPart {
     position: fixed;
